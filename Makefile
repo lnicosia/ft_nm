@@ -6,12 +6,11 @@
 #    By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/22 09:45:49 by lnicosia          #+#    #+#              #
-#    Updated: 2021/03/26 11:52:36 by lnicosia         ###   ########.fr        #
+#    Updated: 2021/04/06 15:30:17 by lnicosia         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NM = nm
-OTOOL = otool
+NAME = ft_nm
 
 MAKEFILE = Makefile
 
@@ -37,9 +36,9 @@ LDFLAGS = -L $(LIBFT_DIR)
 
 LIB_RAW = 
 
-SRC_RAW =	
+SRC_RAW =	main.c ft_nm.c handle_64.c compare.c parse_option_line.c
 
-HEADERS =	
+HEADERS =	nm.h options.h
 
 #
 # Creation of files path
@@ -58,7 +57,7 @@ CFLAGS =	-Wall -Wextra -Werror -Wpadded -Wconversion -I $(INCLUDES_DIR) \
 	  	-I $(LIBFT_DIR)/includes -I $(BMP_PARSER_DIR)/includes \
 		-I $(LIBMFT_DIR)/includes -I $(GLAD_DIR)/include \
 		$(OPTI_FLAGS) \
-		#-fsanitize=address -g3 \
+		-fsanitize=address -g3 \
 		
 	
 #
@@ -97,10 +96,8 @@ RESET :="\e[0m"
 all:
 	@printf $(CYAN)"[INFO] Building libft..\n"$(RESET)
 	@make --no-print-directory -C $(LIBFT_DIR)
-	@printf $(CYAN)"[INFO] Building $(NM)..\n"$(RESET)
-	@make --no-print-directory $(BIN_DIR)/$(NM)
-	@printf $(CYAN)"[INFO] Building $(OTOOL)..\n"$(RESET)
-	@make --no-print-directory $(BIN_DIR)/$(OTOOL)
+	@printf $(CYAN)"[INFO] Building $(NAME)..\n"$(RESET)
+	@make --no-print-directory $(BIN_DIR)/$(NAME)
 
 
 $(LIBFT):
