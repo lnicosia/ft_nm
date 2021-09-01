@@ -1,2 +1,2 @@
-# nm-otool
-Recoding nm and otool in C (42 Project)
+# ft_nm
+Recoding nm in C (42 Project)
