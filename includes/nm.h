@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 19:11:46 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 13:23:44 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/22 18:05:56 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int		is_arg_an_option_line(char *av);
 void	handle_64(char *file, char *ptr, int opt);
 int		parse_option_line(char *av, int *opt);
 int		compare_names(void *s1, void *s2);
+int		compare_names_no_special(void *s1, void *s2);
 
 #endif
