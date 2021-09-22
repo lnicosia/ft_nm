@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/05 16:05:36 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 12:37:11 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/22 13:25:20 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,11 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	switch (sym->sym->st_info)
 	{
 		case 0:
-			sym->type = 'r';
+			if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name,
+				".debug_info"))
+				sym->type = 'N';
+			else
+				sym->type = 'r';
 			break ;
 		case 1:
 			sym->type = 'd';
@@ -58,13 +62,22 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			sym->type = 'b';
 			break ;
 		case 17:
-			sym->type = 'd';
+			if (sym->sym->st_shndx == 0)
+				sym->type = 'U';
+			else
+				sym->type = 'd';
 			break ;
 		case 18:
-			sym->type = 'T';
+			if (sym->sym->st_shndx == 0)
+				sym->type = 'U';
+			else
+				sym->type = 'T';
 			break ;
 		case 32:
-			sym->type = 'w';
+			if (sym->sym->st_shndx == 0)
+				sym->type = 'w';
+			else
+				sym->type = 'W';
 			break ;
 		case 34:
 			sym->type = 'w';
@@ -100,16 +113,13 @@ void	print_symbols(t_dlist *lst, int opt)
 	while (lst)
 	{
 		sym = (t_sym*)lst->content;
-		if (sym->sym->st_value != 0)
+		if (sym->sym->st_shndx != 0)
 			ft_printf("%016x", sym->sym->st_value);
 		else
 			ft_printf("%16s", "");
 		if (opt & OPT_VERBOSE)
-			ft_printf(" %d", sym->sym->st_info);
-		if (sym->sym->st_value == 0 && sym->sym->st_info == 18)
-			ft_printf(" U");
-		else
-			ft_printf(" %c", sym->type);
+			ft_printf(" %2d", sym->sym->st_info);
+		ft_printf(" %c", sym->type);
 		ft_printf(" %s", sym->name);
 		if (opt & OPT_VERBOSE)
 		{
@@ -124,7 +134,7 @@ void	print_symbols(t_dlist *lst, int opt)
 	}
 }
 
-void	handle_64(char *ptr, int opt)
+void	handle_64(char *file, char *ptr, int opt)
 {
 	Elf64_Ehdr	*header;
 	Elf64_Shdr	*sheader;
@@ -132,6 +142,7 @@ void	handle_64(char *ptr, int opt)
 	Elf64_Shdr	*shstr;
 	Elf64_Off	i;
 	uint64_t	j;
+	uint64_t	sym_count;
 	Elf64_Sym	*elf_sym;
 	t_dlist		*lst;
 	t_dlist		*new;
@@ -151,6 +162,7 @@ void	handle_64(char *ptr, int opt)
 	new = NULL;
 	sym.sym = NULL;
 	sym.name = NULL;
+	sym_count = 0;
 	i = 0;
 	if (opt & OPT_VERBOSE)
 	{
@@ -190,6 +202,7 @@ void	handle_64(char *ptr, int opt)
 		}
 		if (sheader->sh_type == SHT_SYMTAB)
 		{
+			sym_count += sheader->sh_size / sheader->sh_entsize;
 			j = 0;
 			if (opt & OPT_VERBOSE)
 				ft_printf("Symbol section has %d symbols\n",
@@ -226,4 +239,6 @@ void	handle_64(char *ptr, int opt)
 	}
 	print_symbols(lst, opt);
 	ft_dlstdelfront(&lst, delsym);
+	if (sym_count == 0)
+		custom_error("ft_nm: %s: no symbols\n", file);
 }

@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 19:11:46 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 11:53:51 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/22 13:23:44 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct		s_sym
 int		ft_nm(int ac, char **av);
 int		parse_nm_options(int ac, char **av, int *opt);
 int		is_arg_an_option_line(char *av);
-void	handle_64(char *ptr, int opt);
+void	handle_64(char *file, char *ptr, int opt);
 int		parse_option_line(char *av, int *opt);
 int		compare_names(void *s1, void *s2);
 

@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 19:13:47 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 09:44:05 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/22 13:23:54 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 		if (ptr[4] == ELFCLASS64)
 		{
 			//ft_printf("64-bits binary\n");
-			handle_64(ptr, opt);
+			handle_64(file, ptr, opt);
 		}
 		else if (ptr[4] == ELFCLASS32)
 		{
