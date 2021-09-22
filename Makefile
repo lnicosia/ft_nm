@@ -6,7 +6,7 @@
 #    By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/03/22 09:45:49 by lnicosia          #+#    #+#              #
-#    Updated: 2021/04/06 15:30:17 by lnicosia         ###   ########.fr        #
+#    Updated: 2021/09/22 17:56:52 by lnicosia         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = ft_nm
 
 MAKEFILE = Makefile
 
-LIB_DIR = lib
+LIB_DIR = .
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = .
@@ -95,9 +95,9 @@ RESET :="\e[0m"
 
 all:
 	@printf $(CYAN)"[INFO] Building libft..\n"$(RESET)
-	@make --no-print-directory -C $(LIBFT_DIR)
+	@make -j4 --no-print-directory -C $(LIBFT_DIR)
 	@printf $(CYAN)"[INFO] Building $(NAME)..\n"$(RESET)
-	@make --no-print-directory $(BIN_DIR)/$(NAME)
+	@make -j4 --no-print-directory $(BIN_DIR)/$(NAME)
 
 
 $(LIBFT):
