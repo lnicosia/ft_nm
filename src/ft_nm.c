@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 19:13:47 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/04/06 15:54:44 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/22 09:44:05 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,36 +16,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-/*
-**	Checks if the given string is an option line (starting with '-')
-*/
-
-int				is_arg_an_option_line(char *av)
-{
-	return (ft_strlen(av) >= 1 && av[0] == '-');
-}
-
-/*
-**	Parse all the options by checking arguments starting with '-'
-*/
-
-int				parse_nm_options(int ac, char **av, int *opt)
-{
-	int	i;
-	
-	i = 1;
-	while (i < ac)
-	{
-		if (is_arg_an_option_line(av[i]))
-		{
-			parse_option_line(av[i], opt);
-		}
-		i++;
-	}
-	return (0);
-}
-
-int		map_file(int fd, t_stat stats, int opt)
+int		map_file(char *file, int fd, t_stat stats, int opt)
 {
 	char				*ptr;
 
@@ -70,8 +41,10 @@ int		map_file(int fd, t_stat stats, int opt)
 		else if (ptr[4] == ELFCLASSNONE)
 			return (custom_error("ft_nm: Invalid file class\n"));
 	}
+	else
+		return (custom_error("ft_nm: %s: file format not recognized\n", file));
 	if (munmap(ptr, (size_t)stats.st_size))
-		return (custom_error("nm: munmap error"));
+		return (custom_error("ft_nm: munmap error"));
 	return (0);
 }
 
@@ -83,24 +56,24 @@ int		analyze_file(char *file, int opt)
 	fd = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
 	{
-		ft_printf("nm: '%s': ", file);
-		return (custom_error(""));
+		ft_printf("ft_nm: '%s': ", file);
+		return (custom_error("\n"));
 	}
 	if (fstat(fd, &stats))
-		return (custom_error(""));
+		return (custom_error("\n"));
 	if (S_ISDIR(stats.st_mode))
 	{
-		ft_printf("nm: Warning: '%s' is a directory\n", file);
+		ft_printf("ft_nm: Warning: '%s' is a directory\n", file);
 		return (-1);
 	}
 	else if (!S_ISREG(stats.st_mode))
 	{
-		ft_printf("nm: Warning: '%s' is not an ordinary file\n", file);
+		ft_printf("ft_nm: Warning: '%s' is not an ordinary file\n", file);
 		return (-1);
 	}
-	map_file(fd, stats, opt);
+	map_file(file, fd, stats, opt);
 	if (close(fd))
-		return (custom_error(""));
+		return (custom_error("\n"));
 	return (0);
 }
 
@@ -114,7 +87,8 @@ int		ft_nm(int ac, char **av)
 	i = 1;
 	while (i < ac)
 	{
-		analyze_file(av[1], opt);
+		if (!is_arg_an_option_line(av[i]))
+			analyze_file(av[i], opt);
 		i++;
 	}
 	if (ac == 1)
