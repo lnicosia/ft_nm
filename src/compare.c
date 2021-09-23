@@ -15,14 +15,36 @@
 
 int		ft_strcmp_no_case(char *s1, char *s2)
 {
+	int	underscore;
+
+	underscore = 0;
 	while (*s1 && *s2)
 	{
+		while (*s1 && *s1 == '_')
+		{
+			s1++;
+			if (underscore == 0)
+				underscore = 1;
+		}
+		while (*s2 && *s2 == '_')
+		{
+			s2++;
+			if (underscore == 0)
+				underscore = 2;
+		}
 		if (ft_tolower(*s1) != ft_tolower(*s2))
 		{
 			return (ft_tolower(*s1) - ft_tolower(*s2));
 		}
 		s1++;
 		s2++;
+	}
+	if (ft_tolower(*s1) == ft_tolower(*s2) && underscore != 0)
+	{
+		if (underscore == 1)
+			return (1);
+		else if (underscore == 2)
+			return (-1);
 	}
 	return (ft_tolower(*s1) - ft_tolower(*s2));
 }

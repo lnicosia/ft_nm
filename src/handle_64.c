@@ -98,8 +98,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	}
 	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".bss"))
 		sym->type = 'b';
-	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array"))
-		sym->type = 'd';
+	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
+		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array"))
+		sym->type = 't';
 	if (ELF64_ST_BIND(sym->sym->st_info) == 1)
 		sym->type = ft_toupper(sym->type);
 }
