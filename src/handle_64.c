@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/05 16:05:36 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 18:06:22 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/23 09:21:42 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,10 @@ void	handle_64(char *file, char *ptr, int opt)
 					ft_dlstdelfront(&lst, delsym);
 					return ;
 				}
-				ft_dlstinsert(&lst, new, compare_names_no_special);
+				if ((opt & OPT_C))
+					ft_dlstinsert(&lst, new, compare_names);
+				else
+					ft_dlstinsert(&lst, new, compare_names_no_special);
 				j++;
 			}
 		}

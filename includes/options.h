@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/06 15:26:24 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/04/06 15:28:40 by lnicosia         ###   ########.fr       */
+/*   Updated: 2021/09/23 09:17:55 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,6 @@
 
 # define OPT_A (1 << 0)
 # define OPT_VERBOSE (1 << 1)
+# define OPT_C (1 << 2)
 
 #endif
