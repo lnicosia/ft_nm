@@ -27,6 +27,10 @@ int		check_opt(char av, int *opt)
 	{
 		*opt |= OPT_C;
 	}
+	else if (av == 'p')
+	{
+		*opt |= OPT_P;
+	}
 	return (0);
 }
 

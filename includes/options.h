@@ -16,5 +16,6 @@
 # define OPT_A (1 << 0)
 # define OPT_VERBOSE (1 << 1)
 # define OPT_C (1 << 2)
+# define OPT_P (1 << 3)
 
 #endif

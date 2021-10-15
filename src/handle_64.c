@@ -41,8 +41,6 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
 	}
-	if (sym->sym->st_value == 0)
-		sym->type = 'u';
 	switch (sym->sym->st_info)
 	{
 		case 0:
@@ -53,7 +51,10 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 				sym->type = 'r';
 			break ;
 		case 1:
-			sym->type = 'd';
+			if (sheader->sh_flags == 2)
+				sym->type = 'r';
+			else
+				sym->type = 'd';
 			break ;
 		case 2:
 			sym->type = 't';
@@ -96,24 +97,33 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		if (ELF64_ST_BIND(sym->sym->st_info) == 2)
 			sym->type = 'W';
 	}
-	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".bss"))
+	else if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
 		sym->type = 'b';
 	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array"))
 		sym->type = 't';
+	if (sym->sym->st_value == 0 && sym->type != 'w')
+		sym->type = 'u';
 	if (ELF64_ST_BIND(sym->sym->st_info) == 1)
 		sym->type = ft_toupper(sym->type);
 }
 
-void	print_symbols(t_dlist *lst, int opt)
+void	print_symbols(t_dlist *lst, char *ptr, Elf64_Ehdr *header,
+Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 {
 	t_sym		*sym;
 
+	(void)ptr;
+	(void)header;
+	(void)shstr;
+	(void)shstrhdr;
 	while (lst && lst->prev)
 		lst = lst->prev;
 	while (lst)
 	{
 		sym = (t_sym*)lst->content;
+		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + header->e_shoff
+		+ (header->e_shentsize * sym->sym->st_shndx));
 		if (sym->sym->st_shndx != 0)
 			ft_printf("%016x", sym->sym->st_value);
 		else
@@ -128,7 +138,8 @@ void	print_symbols(t_dlist *lst, int opt)
 			ft_printf(", B = %d", ELF64_ST_BIND(sym->sym->st_info));
 			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym->st_other));
 			ft_printf(", S = %d", sym->sym->st_size);
-			ft_printf(", H = %d", sym->sym->st_shndx);
+			ft_printf(", H = %d (%s, flags = %d)", sym->sym->st_shndx,
+			ptr + shstrhdr->sh_offset + sheader->sh_name, sheader->sh_flags);
 		}
 		ft_printf("\n");
 		lst = lst->next;
@@ -241,7 +252,7 @@ void	handle_64(char *file, char *ptr, int opt)
 		}
 		i++;
 	}
-	print_symbols(lst, opt);
+	print_symbols(lst, ptr, header, shstr, shstrhdr, opt);
 	ft_dlstdelfront(&lst, delsym);
 	if (sym_count == 0)
 		custom_error("ft_nm: %s: no symbols\n", file);
