@@ -56,11 +56,18 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			else
 				sym->type = 'd';
 			break ;
+		case 6:
+			sym->type = 'b';
+			break ;
 		case 2:
 			sym->type = 't';
 			break ;
 		case 16:
-			sym->type = 'b';
+			if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name,
+				".noptrdata"))
+				sym->type = 'd';
+			else
+				sym->type = 'b';
 			break ;
 		case 17:
 			if (sym->sym->st_shndx == 0)
@@ -102,8 +109,10 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array"))
 		sym->type = 't';
-	if (sym->sym->st_value == 0 && sym->type != 'w')
+	if (sym->sym->st_value == 0 && sym->type != 'w' && sym->type != 'b')
 		sym->type = 'u';
+	if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text"))
+		sym->type = 't';
 	if (ELF64_ST_BIND(sym->sym->st_info) == 1)
 		sym->type = ft_toupper(sym->type);
 }
