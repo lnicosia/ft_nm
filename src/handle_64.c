@@ -251,7 +251,7 @@ void	handle_64(char *file, char *ptr, int opt)
 				if ((opt & OPT_C))
 					ft_dlstinsert(&lst, new, compare_names);
 				else
-					ft_dlstinsert(&lst, new, compare_names_no_special);
+					ft_dlstinsert(&lst, new, compare_names);
 				j++;
 			}
 		}
