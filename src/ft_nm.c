@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "nm.h"
+#include "options.h"
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -42,7 +43,7 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 			return (custom_error("ft_nm: Invalid file class\n"));
 	}
 	else
-		return (custom_error("ft_nm: %s: file format not recognized\n", file));
+		return (custom_error("ft_nm: %s: File format not recognized\n", file));
 	if (munmap(ptr, (size_t)stats.st_size))
 		return (custom_error("ft_nm: munmap error"));
 	return (0);
@@ -56,7 +57,7 @@ int		analyze_file(char *file, int opt)
 	fd = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
 	{
-		ft_printf("ft_nm: '%s': ", file);
+		ft_printf("ft_nm: '%s': Open error", file);
 		return (custom_error("\n"));
 	}
 	if (fstat(fd, &stats))
@@ -84,6 +85,8 @@ int		ft_nm(int ac, char **av)
 
 	opt = 0;
 	parse_nm_options(ac, av, &opt);
+	if (ac > 2)
+		opt |= OPT_PRINT_FILE_NAME;
 	i = 1;
 	while (i < ac)
 	{

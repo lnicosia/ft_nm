@@ -261,6 +261,8 @@ void	handle_64(char *file, char *ptr, int opt)
 		}
 		i++;
 	}
+	if (opt & OPT_PRINT_FILE_NAME)
+		ft_printf("\n%s:\n", file);
 	print_symbols(lst, ptr, header, shstr, shstrhdr, opt);
 	ft_dlstdelfront(&lst, delsym);
 	if (sym_count == 0)
