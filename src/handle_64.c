@@ -13,6 +13,7 @@
 #include "nm.h"
 #include "libft.h"
 #include "options.h"
+#include <limits.h>
 
 /*
 **	Frees the content of a t_sym
@@ -27,8 +28,13 @@ void			delsym(void *file, size_t size)
 void	set_symbol_type(t_sym *sym, char *ptr, Elf64_Ehdr *header,
 Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 {
+	uint16_t	shndx;
+	if (sym->sym->st_shndx >= header->e_shnum)
+		shndx = (uint16_t)(USHRT_MAX - sym->sym->st_shndx);
+	else
+		shndx = sym->sym->st_shndx;
 	Elf64_Shdr *sheader = (Elf64_Shdr*) (ptr + header->e_shoff
-		+ (header->e_shentsize * sym->sym->st_shndx));
+		+ (header->e_shentsize * shndx));
 	if (opt & OPT_VERBOSE)
 	{
 		ft_printf("------------------------------------------------\n");
@@ -36,7 +42,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ptr + shstr->sh_offset + sym->sym->st_name);
 		ft_printf("\tInfo = %d\n", sym->sym->st_info);
 		ft_printf("\tOther = %d\n", sym->sym->st_other);
-		ft_printf("\tSection = %hu (%s)\n", (uint16_t)sym->sym->st_shndx,
+		ft_printf("\tSection = %hu (%s)\n", shndx,
 		ptr + shstrhdr->sh_offset + sheader->sh_name);
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
@@ -214,6 +220,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		header->e_shentsize * header->e_shnum);
 		ft_printf("Program header's size = %hu (total size = %d)\n",
 		(uint16_t)header->e_phentsize, header->e_phentsize * header->e_phnum);
+			ft_printf("Endian = ");
+			if (ptr[5] == ELFDATA2LSB)
+				ft_printf("little\n");
+			else if (ptr[5] == ELFDATA2MSB)
+				ft_printf("big\n");
 
 	}
 	// Check if the file is big enough to contain all the section headers
