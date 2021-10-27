@@ -61,15 +61,19 @@ int		is_arg_an_option_line(char *av)
 int		parse_nm_options(int ac, char **av, int *opt)
 {
 	int	i;
+	int nb_files;
 	
 	i = 1;
+	nb_files = 0;
 	while (i < ac)
 	{
 		if (is_arg_an_option_line(av[i]))
 		{
 			parse_option_line(av[i], opt);
 		}
+		else
+			nb_files++;
 		i++;
 	}
-	return (0);
+	return (nb_files);
 }

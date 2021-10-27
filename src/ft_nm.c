@@ -29,15 +29,15 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 	if (ptr[0] == ELFMAG0 && ptr[1] == ELFMAG1
 		&& ptr[2] == ELFMAG2 && ptr[3] == ELFMAG3)
 	{
-		//ft_printf("ELF binary\n");
+		ft_printf("ELF binary\n");
 		if (ptr[4] == ELFCLASS64)
 		{
-			//ft_printf("64-bits binary\n");
+			ft_printf("64-bits binary\n");
 			handle_64(file, ptr, opt);
 		}
 		else if (ptr[4] == ELFCLASS32)
 		{
-			//ft_printf("32-bits binary\n");
+			ft_printf("32-bits binary\n");
 		}
 		else if (ptr[4] == ELFCLASSNONE)
 			return (custom_error("ft_nm: Invalid file class\n"));
@@ -81,10 +81,11 @@ int		analyze_file(char *file, int opt)
 int		ft_nm(int ac, char **av)
 {
 	int	i;
+	int	nb_files;
 	int	opt;
 
 	opt = 0;
-	parse_nm_options(ac, av, &opt);
+	nb_files = parse_nm_options(ac, av, &opt);
 	if (ac > 2)
 		opt |= OPT_PRINT_FILE_NAME;
 	i = 1;
@@ -94,7 +95,7 @@ int		ft_nm(int ac, char **av)
 			analyze_file(av[i], opt);
 		i++;
 	}
-	if (ac == 1)
+	if (nb_files == 0)
 		analyze_file("a.out", opt);
 	return (0);
 }

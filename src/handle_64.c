@@ -41,80 +41,42 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
 	}
-	switch (sym->sym->st_info)
+	sym->type = 'r';
+	switch (ELF64_ST_TYPE(sym->sym->st_info))
 	{
-		case 0:
-			if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name,
-				".debug_info"))
-				sym->type = 'N';
-			else
-				sym->type = 'r';
-			break ;
-		case 1:
-			if (sheader->sh_flags == 2)
-				sym->type = 'r';
-			else
+		case STT_OBJECT:
+			if (sheader->sh_flags == 3)
 				sym->type = 'd';
 			break ;
-		case 6:
-			sym->type = 'b';
-			break ;
-		case 2:
+		case STT_FUNC:
 			sym->type = 't';
 			break ;
-		case 16:
-			if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name,
-				".noptrdata"))
-				sym->type = 'd';
-			else
-				sym->type = 'b';
-			break ;
-		case 17:
-			if (sym->sym->st_shndx == 0)
-				sym->type = 'U';
-			else
-				sym->type = 'd';
-			break ;
-		case 18:
-			if (sym->sym->st_shndx == 0)
-				sym->type = 'U';
-			else
-				sym->type = 'T';
-			break ;
-		case 32:
-			if (sym->sym->st_shndx == 0)
-				sym->type = 'w';
-			else
-				sym->type = 'W';
-			break ;
-		case 34:
-			sym->type = 'w';
-			break ;
-		default:
-			sym->type = '?';
-			break ;
 	}
-	if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".rodata"))
-		sym->type = 'r';
-	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".eh_frame"))
-		sym->type = 'r';
-	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".data"))
-	{
+	if (sym->sym->st_value == 0)
+		sym->type = 'u';
+	if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "data"))
 		sym->type = 'd';
-		if (ELF64_ST_BIND(sym->sym->st_info) == 2)
-			sym->type = 'W';
-	}
-	else if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
-		sym->type = 'b';
-	else if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
+	if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".rodata")
+		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".eh_frame"))
+		sym->type = 'r';
+	if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text")
+		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array"))
 		sym->type = 't';
-	if (sym->sym->st_value == 0 && sym->type != 'w' && sym->type != 'b')
-		sym->type = 'u';
-	if (ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text"))
-		sym->type = 't';
-	if (ELF64_ST_BIND(sym->sym->st_info) == 1)
-		sym->type = ft_toupper(sym->type);
+	if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
+		sym->type = 'b';
+	switch (ELF64_ST_BIND(sym->sym->st_info))
+	{
+		case STB_WEAK:
+			sym->type = 'w';
+			if (sheader->sh_flags != 0)
+				sym->type = 'W';
+			break ;
+		case STB_GLOBAL:
+			if (sym->type != 'w')
+				sym->type = ft_toupper(sym->type);
+			break ;
+	}
 }
 
 void	print_symbols(t_dlist *lst, char *ptr, Elf64_Ehdr *header,
@@ -138,17 +100,70 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		else
 			ft_printf("%16s", "");
 		if (opt & OPT_VERBOSE)
-			ft_printf(" %2d", sym->sym->st_info);
+			ft_printf(" %3d", sym->sym->st_info);
 		ft_printf(" %c", sym->type);
 		ft_printf(" %s", sym->name);
 		if (opt & OPT_VERBOSE)
 		{
-			ft_printf("  T = %d", ELF64_ST_TYPE(sym->sym->st_info));
-			ft_printf(", B = %d", ELF64_ST_BIND(sym->sym->st_info));
+			ft_printf(" T =");
+			switch (ELF64_ST_TYPE(sym->sym->st_info))
+			{
+				case STT_NOTYPE:
+					ft_printf(" NOTYPE");
+					break ;
+				case STT_OBJECT:
+					ft_printf(" OBJECT");
+					break ;
+				case STT_FUNC:
+					ft_printf(" FUNC");
+					break ;
+				case STT_SECTION:
+					ft_printf(" SECTION");
+					break ;
+				case STT_FILE:
+					ft_printf(" FILE");
+					break ;
+				case STT_LOPROC:
+					ft_printf(" LOPROC");
+					break ;
+				case STT_HIPROC:
+					ft_printf(" HIPROC");
+					break ;
+			}
+			ft_printf(" (%d)", ELF64_ST_TYPE(sym->sym->st_info));
+			ft_printf(", B =");
+			switch (ELF64_ST_BIND(sym->sym->st_info))
+			{
+				case STB_LOCAL:
+					ft_printf(" LOCAL");
+					break ;
+				case STB_GLOBAL:
+					ft_printf(" GLOBAL");
+					break ;
+				case STB_WEAK:
+					ft_printf(" WEAK");
+					break ;
+				case STB_LOPROC:
+					ft_printf(" LOPROC");
+					break ;
+				case STB_HIPROC:
+					ft_printf(" HIPROC");
+					break ;
+			}
+			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym->st_info));
 			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym->st_other));
 			ft_printf(", S = %d", sym->sym->st_size);
-			ft_printf(", H = %d (%s, flags = %d)", sym->sym->st_shndx,
-			ptr + shstrhdr->sh_offset + sheader->sh_name, sheader->sh_flags);
+			ft_printf(", H = %d (%s), flags =", sym->sym->st_shndx,
+			ptr + shstrhdr->sh_offset + sheader->sh_name);
+			if (sheader->sh_flags & SHF_WRITE)
+				ft_printf(" WRITE");
+			if (sheader->sh_flags & SHF_ALLOC)
+				ft_printf(" ALLOC");
+			if (sheader->sh_flags & SHF_EXECINSTR)
+				ft_printf(" EXECINSTR");
+			if (sheader->sh_flags & SHF_MASKPROC)
+				ft_printf(" MASKPROC");
+			ft_printf(" (%d)", sheader->sh_flags);
 		}
 		ft_printf("\n");
 		lst = lst->next;

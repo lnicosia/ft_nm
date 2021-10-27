@@ -111,7 +111,7 @@ $(OBJ_DIR):
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDES)
 	@printf $(YELLOW)"Compiling $<\n"$(RESET)
-	@gcc -c $< -o $@ $(CFLAGS) 
+	gcc -c $< -o $@ $(CFLAGS) 
 
 $(NAME): $(LIBFT) $(OBJ_DIR) $(OBJ) 
 	@printf $(CYAN)"[INFO] Linking ${BIN_DIR}/${NAME}\n"$(RESET)
