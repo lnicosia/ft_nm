@@ -41,7 +41,7 @@ typedef struct		s_sym
 int		ft_nm(int ac, char **av);
 int		parse_nm_options(int ac, char **av, int *opt);
 int		is_arg_an_option_line(char *av);
-void	handle_64(char *file, char *ptr, int opt);
+void	handle_64(char *file, char *ptr, long int file_size, int opt);
 int		parse_option_line(char *av, int *opt);
 int		compare_names(void *s1, void *s2);
 int		compare_names_no_special(void *s1, void *s2);

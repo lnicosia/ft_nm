@@ -170,7 +170,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	}
 }
 
-void	handle_64(char *file, char *ptr, int opt)
+void	handle_64(char *file, char *ptr, long int file_size, int opt)
 {
 	Elf64_Ehdr	*header;
 	Elf64_Shdr	*sheader;
@@ -183,15 +183,46 @@ void	handle_64(char *file, char *ptr, int opt)
 	t_dlist		*lst;
 	t_dlist		*new;
 	t_sym		sym;
+	size_t		expected_size;
 
 	header = (Elf64_Ehdr*) ptr;
 	if (opt & OPT_VERBOSE)
 	{
+		switch (header->e_type)
+		{
+			case ET_NONE:
+				ft_printf("Unknown type\n");
+				break;
+			case ET_REL:
+				ft_printf("Relocatable file\n");
+				break;
+			case ET_EXEC:
+				ft_printf("Executable file\n");
+				break;
+			case ET_DYN:
+				ft_printf("Shared object\n");
+				break;
+			case ET_CORE:
+				ft_printf("Core file\n");
+				break;
+		}
 		ft_printf("%hu program entries\n", (uint16_t)header->e_phnum);
 		ft_printf("%hu sections entries\n", (uint16_t)header->e_shnum);
-		ft_printf("Offset = %lu ", (Elf64_Off)header->e_shoff);
-		ft_printf("Size = %hu\n", (uint16_t)header->e_shentsize);
-		ft_printf("Strings index = %hu\n", (uint16_t)header->e_shstrndx);
+		ft_printf("Section headers offset = %lu\n", (Elf64_Off)header->e_shoff);
+		ft_printf("Strings section header index = %hu\n", (uint16_t)header->e_shstrndx);
+		ft_printf("Sections header's size = %hu (total size = %d)\n", (uint16_t)header->e_shentsize,
+		header->e_shentsize * header->e_shnum);
+		ft_printf("Program header's size = %hu (total size = %d)\n",
+		(uint16_t)header->e_phentsize, header->e_phentsize * header->e_phnum);
+
+	}
+	// Check if the file is big enough to contain all the section headers
+	if ((long int)header->e_shoff + header->e_shentsize * header->e_shnum > file_size
+		|| (long int)header->e_phoff + header->e_phentsize * header->e_phnum > file_size)
+	{
+		custom_error("%s: file too short\n", file);
+		custom_error("ft_nm: %s: File truncated\n", file);
+		return ;
 	}
 	shstrhdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * header->e_shstrndx));
 	lst = NULL;
@@ -199,8 +230,7 @@ void	handle_64(char *file, char *ptr, int opt)
 	sym.sym = NULL;
 	sym.name = NULL;
 	sym_count = 0;
-	i = 0;
-	if (opt & OPT_VERBOSE)
+	/*if (opt & OPT_VERBOSE)
 	{
 		ft_printf("Section types:\n");
 		ft_printf("SHT_NULL = %d\n", SHT_NULL);
@@ -218,11 +248,41 @@ void	handle_64(char *file, char *ptr, int opt)
 		ft_printf("SHT_HIPROC = %d\n", SHT_HIPROC);
 		ft_printf("SHT_LOUSER = %d\n", SHT_LOUSER);
 		ft_printf("SHT_HIUSER = %d\n", SHT_HIUSER);
-	}
+	}*/
+	expected_size = (size_t)header->e_shentsize * header->e_shnum
+					+ (size_t)header->e_phentsize * header->e_phnum
+					+ header->e_ehsize;
+	i = 0;
 	while (i < header->e_shnum)
 	{
 		sheader = (Elf64_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * i));
+		expected_size += sheader->sh_size;
+		i++;
+	}
+	i = 0;
+	while (i < header->e_phnum)
+	{
+		//Elf64_Phdr *pheader = (Elf64_Phdr*) (ptr + header->e_phoff
+		//+ (header->e_phentsize * i));
+		//file_size += pheader->p_filesz;
+		//file_size += pheader->p_memsz;
+		i++;
+	}
+	if (opt & OPT_VERBOSE)
+		ft_printf("File expected size = %d\n", expected_size);
+	i = 0;
+	while (i < header->e_shnum)
+	{
+		sheader = (Elf64_Shdr*) (ptr + header->e_shoff
+		+ (header->e_shentsize * i));
+		// Check if the file is big enough to contain the section
+		if ((long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
+		{
+			custom_error("%s: file too short\n", file);
+			custom_error("ft_nm: %s: File truncated\n", file);
+			return ;
+		}
 		if (opt & OPT_VERBOSE)
 		{
 			ft_printf("------------------------------\n");

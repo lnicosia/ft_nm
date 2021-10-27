@@ -24,23 +24,25 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 	if ((ptr = (char *)mmap(0, (size_t)stats.st_size,
 		PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		return (custom_error("ft_nm: mmap error"));
-	if (stats.st_size < 4)
-		return (custom_error("ft_nm: Invalid file size (%ld)\n", stats.st_size));
 	if (ptr[0] == ELFMAG0 && ptr[1] == ELFMAG1
 		&& ptr[2] == ELFMAG2 && ptr[3] == ELFMAG3)
 	{
-		ft_printf("ELF binary\n");
+		//ft_printf("ELF binary\n");
 		if (ptr[4] == ELFCLASS64)
 		{
-			ft_printf("64-bits binary\n");
-			handle_64(file, ptr, opt);
+			if (opt & OPT_VERBOSE)
+				ft_printf("64-bits binary\n");
+			handle_64(file, ptr, stats.st_size, opt);
 		}
 		else if (ptr[4] == ELFCLASS32)
 		{
-			ft_printf("32-bits binary\n");
+			if (opt & OPT_VERBOSE)
+				ft_printf("32-bits binary\n");
 		}
 		else if (ptr[4] == ELFCLASSNONE)
 			return (custom_error("ft_nm: Invalid file class\n"));
+		else
+			return (custom_error("ft_nm: %s: File format not recognized\n", file));
 	}
 	else
 		return (custom_error("ft_nm: %s: File format not recognized\n", file));
@@ -61,7 +63,13 @@ int		analyze_file(char *file, int opt)
 		return (custom_error("\n"));
 	}
 	if (fstat(fd, &stats))
-		return (custom_error("\n"));
+		return (custom_error("ft_nm: fstat error\n"));
+	if (stats.st_size == 0)
+		return (custom_error(""));
+	if ((unsigned int)stats.st_size <= 3)
+		return (custom_error("ft_nm: %s: File truncated\n", file));
+	if (opt & OPT_VERBOSE)
+		ft_printf("File size = %d\n", stats.st_size);
 	if (S_ISDIR(stats.st_mode))
 	{
 		ft_printf("ft_nm: Warning: '%s' is a directory\n", file);
