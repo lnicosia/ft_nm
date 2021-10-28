@@ -40,7 +40,7 @@ SRC_RAW = ft_memccpy.c ft_memcpy.c ft_memset.c ft_bzero.c ft_memmove.c \
 		  thread_pool_work.c init_tpool.c free_tpool.c skip_chars.c \
 		  check_chars.c ft_rmchar.c ft_dlstnew.c ft_dlstdelfront.c \
 		  ft_dlstinsert.c ft_dlstbackward.c ft_dlstforward.c \
-		  ft_dlstlen.c ft_stricmp.c
+		  ft_dlstlen.c ft_stricmp.c print_bits.c reverse_bits.c \
 
 HEADERS = libft.h thread_pool.h get_next_line.h
 

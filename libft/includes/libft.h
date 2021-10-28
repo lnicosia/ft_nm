@@ -149,6 +149,8 @@ int					valid_int(char *line);
 int					valid_double(char *line);
 int					valid_hexa(char *line);
 char				*ft_rmchar(char *str, char c);
+void				print_bits(void *ptr, size_t length);
+void				reverse_bits(void *ptr, size_t length);
 
 /*
 **	Double linked list functions

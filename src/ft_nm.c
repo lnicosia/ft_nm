@@ -58,10 +58,7 @@ int		analyze_file(char *file, int opt)
 
 	fd = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
-	{
-		ft_printf("ft_nm: '%s': Open error", file);
-		return (custom_error("\n"));
-	}
+		return (custom_error("ft_nm: '%s': Open error\n", file));
 	if (fstat(fd, &stats))
 		return (custom_error("ft_nm: fstat error\n"));
 	if (stats.st_size == 0)

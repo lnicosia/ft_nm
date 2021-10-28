@@ -29,9 +29,9 @@ void	set_symbol_type(t_sym *sym, char *ptr, Elf64_Ehdr *header,
 Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 {
 	uint16_t	shndx;
-	if (sym->sym->st_shndx >= header->e_shnum)
-		shndx = (uint16_t)(USHRT_MAX - sym->sym->st_shndx);
-	else
+	//if (sym->sym->st_shndx >= header->e_shnum)
+	//	shndx = (uint16_t)(USHRT_MAX - sym->sym->st_shndx);
+//	else
 		shndx = sym->sym->st_shndx;
 	Elf64_Shdr *sheader = (Elf64_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * shndx));
@@ -42,8 +42,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ptr + shstr->sh_offset + sym->sym->st_name);
 		ft_printf("\tInfo = %d\n", sym->sym->st_info);
 		ft_printf("\tOther = %d\n", sym->sym->st_other);
-		ft_printf("\tSection = %hu (%s)\n", shndx,
-		ptr + shstrhdr->sh_offset + sheader->sh_name);
+		ft_printf("\tSection = %hu", shndx);
+		ft_printf(" (%s)\n", ptr + shstrhdr->sh_offset + sheader->sh_name);
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
 	}
