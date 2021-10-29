@@ -25,7 +25,7 @@ void	reverse_bits(void *ptr, size_t length)
 	
 	if (length > MAX_BYTES * 8)
 	{
-		custom_error("reverse_bits error: Trying to reverse bits of a array bigger than %d\n",
+		custom_error("reverse_bits error: Trying to reverse bits of an array bigger than %d\n",
 		MAX_BYTES * 8);
 		return ;
 	}
