@@ -103,9 +103,14 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	switch (ELF64_ST_BIND(sym->sym->st_info))
 	{
 		case STB_WEAK:
-			sym->type = 'w';
-			if (shndx_ok && sheader->sh_flags != 0)
-				sym->type = 'W';
+			if (ELF64_ST_TYPE(sym->sym->st_info) == STT_OBJECT)
+				sym->type = 'V';
+			else
+			{
+				sym->type = 'w';
+				if (shndx_ok && sheader->sh_flags != 0)
+					sym->type = 'W';
+			}
 			break ;
 		case STB_GLOBAL:
 			if (sym->type != 'w')
@@ -397,7 +402,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 					|| elf_sym->st_shndx == SHN_COMMON
 					|| (shdr && shdr->sh_flags & SHF_MASKPROC)
 					|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
-					&& elf_sym->st_value == 0 && !ft_strequ(".text", ptr + shstrhdr->sh_offset + shdr->sh_name))
+					&& elf_sym->st_value == 0 && ft_strequ(".text.unlikely", ptr + shstrhdr->sh_offset + shdr->sh_name))
 					|| (elf_sym->st_info == 0 && elf_sym->st_value == 0 && elf_sym->st_size == 0
 					&& elf_sym->st_name == 0 && elf_sym->st_shndx == 0))
 				{
