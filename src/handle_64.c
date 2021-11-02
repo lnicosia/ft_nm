@@ -384,9 +384,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			{
 				ft_bzero(&sym, sizeof(sym));
 				elf_sym = (Elf64_Sym *)(ptr + sheader->sh_offset + (sheader->sh_entsize * j));
-				Elf64_Shdr *shdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
-				if (elf_sym->st_info == STT_FILE || 
-					elf_sym->st_info == STT_SECTION
+				Elf64_Shdr *shdr = NULL;
+				if (elf_sym->st_shndx < header->e_shnum)
+					shdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
+				if (!shdr || elf_sym->st_info == STT_FILE
+					|| elf_sym->st_info == STT_SECTION
 					|| elf_sym->st_shndx == SHN_COMMON
 					|| shdr->sh_flags & SHF_MASKPROC
 					|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL

@@ -385,8 +385,8 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				Elf32_Shdr *shdr = NULL;
 				if (elf_sym->st_shndx < header->e_shnum)
 					shdr = (Elf32_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
-				if (!shdr || elf_sym->st_info == STT_FILE || 
-					elf_sym->st_info == STT_SECTION
+				if (!shdr || elf_sym->st_info == STT_FILE
+					|| elf_sym->st_info == STT_SECTION
 					|| elf_sym->st_shndx == SHN_COMMON
 					|| shdr->sh_flags & SHF_MASKPROC
 					|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC
