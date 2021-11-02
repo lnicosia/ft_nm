@@ -29,9 +29,14 @@ char		ignore_char(char c)
 **	to go through our dlist
 */
 
-int		compare_names(void *s1, void *s2)
+int		compare_names32(void *s1, void *s2)
 {
-	return (ft_strcmp(((t_sym*)s1)->name, ((t_sym*)s2)->name));
+	return (ft_strcmp(((t_sym32*)s1)->name, ((t_sym32*)s2)->name));
+}
+
+int		compare_names64(void *s1, void *s2)
+{
+	return (ft_strcmp(((t_sym64*)s1)->name, ((t_sym64*)s2)->name));
 }
 
 /*
@@ -49,10 +54,10 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 	int			s2_first_real_char;
 	char		*s1, *s2;
 	char		*str1, *str2;
-	t_sym		*sym1, *sym2;
+	t_sym64		*sym1, *sym2;
 
-	sym1 = (t_sym*)ptr1;
-	sym2 = (t_sym*)ptr2;
+	sym1 = (t_sym64*)ptr1;
+	sym2 = (t_sym64*)ptr2;
 	s1 = sym1->name;
 	s2 = sym2->name;
 	str1 = s1;

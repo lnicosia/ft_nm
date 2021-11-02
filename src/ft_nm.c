@@ -38,6 +38,7 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 		{
 			if (opt & OPT_VERBOSE)
 				ft_printf("32-bits binary\n");
+			handle_32(file, ptr, stats.st_size, opt);
 		}
 		else if (ptr[4] == ELFCLASSNONE)
 			return (custom_error("ft_nm: Invalid file class\n"));

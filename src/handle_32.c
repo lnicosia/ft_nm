@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handle_64.c                                        :+:      :+:    :+:   */
+/*   handle_32.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -25,8 +25,8 @@ static void			delsym(void *file, size_t size)
 	(void)file;
 }
 
-static void	set_symbol_type(t_sym64 *sym, char *ptr, Elf64_Ehdr *header,
-Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
+static void	set_symbol_type(t_sym32 *sym, char *ptr, Elf32_Ehdr *header,
+Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
 	uint16_t	shndx;
 	int			shndx_ok;
@@ -42,7 +42,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		shndx = sym->sym->st_shndx;
 		shndx_ok = 1;
 	}
-	Elf64_Shdr *sheader = (Elf64_Shdr*) (ptr + header->e_shoff
+	Elf32_Shdr *sheader = (Elf32_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * shndx));
 	if (opt & OPT_VERBOSE)
 	{
@@ -72,10 +72,10 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			}
 		}
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
-		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
+		ft_printf("\tSize = %lu\n", (uint32_t)sym->sym->st_size);
 	}
 	sym->type = 'r';
-	switch (ELF64_ST_TYPE(sym->sym->st_info))
+	switch (ELF32_ST_TYPE(sym->sym->st_info))
 	{
 		case STT_OBJECT:
 			if (shndx_ok && sheader->sh_flags == 3)
@@ -98,7 +98,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		sym->type = 't';
 	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
 		sym->type = 'b';
-	switch (ELF64_ST_BIND(sym->sym->st_info))
+	switch (ELF32_ST_BIND(sym->sym->st_info))
 	{
 		case STB_WEAK:
 			sym->type = 'w';
@@ -112,28 +112,25 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	}
 }
 
-static void	print_symbols(t_dlist *lst, char *ptr, Elf64_Ehdr *header,
-Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
+static void	print_symbols(t_dlist *lst, char *ptr, Elf32_Ehdr *header,
+Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
-	t_sym64		*sym;
+	t_sym32		*sym;
 	int			shndx_ok;
 	int			padding;
 
 	(void)shstr;
-	if (opt & OPT_LTO)
-		padding = 8;
-	else
-		padding = 16;
+	padding = 8;
 	while (lst && lst->prev)
 		lst = lst->prev;
 	while (lst)
 	{
-		sym = (t_sym64*)lst->content;
+		sym = (t_sym32*)lst->content;
 		if (sym->sym->st_shndx >= header->e_shnum)
 			shndx_ok = 0;
 		else
 			shndx_ok = 1;
-		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + header->e_shoff
+		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * sym->sym->st_shndx));
 		if (sym->sym->st_shndx != 0)
 			ft_printf("%0*x", padding, sym->sym->st_value);
@@ -146,7 +143,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		if (opt & OPT_VERBOSE)
 		{
 			ft_printf(" T =");
-			switch (ELF64_ST_TYPE(sym->sym->st_info))
+			switch (ELF32_ST_TYPE(sym->sym->st_info))
 			{
 				case STT_NOTYPE:
 					ft_printf(" NOTYPE");
@@ -170,9 +167,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					ft_printf(" HIPROC");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_TYPE(sym->sym->st_info));
+			ft_printf(" (%d)", ELF32_ST_TYPE(sym->sym->st_info));
 			ft_printf(", B =");
-			switch (ELF64_ST_BIND(sym->sym->st_info))
+			switch (ELF32_ST_BIND(sym->sym->st_info))
 			{
 				case STB_LOCAL:
 					ft_printf(" LOCAL");
@@ -190,8 +187,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					ft_printf(" HIPROC");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym->st_info));
-			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym->st_other));
+			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym->st_info));
+			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym->st_other));
 			ft_printf(", S = %d", sym->sym->st_size);
 			ft_printf(", H = %d", sym->sym->st_shndx);
 			if (shndx_ok)
@@ -228,21 +225,21 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	}
 }
 
-void	handle_64(char *file, char *ptr, long int file_size, int opt)
+void	handle_32(char *file, char *ptr, long int file_size, int opt)
 {
-	Elf64_Ehdr	*header;
-	Elf64_Shdr	*sheader;
-	Elf64_Shdr	*shstrhdr;
-	Elf64_Shdr	*shstr;
-	Elf64_Off	i;
-	uint64_t	j;
-	uint64_t	sym_count;
-	Elf64_Sym	*elf_sym;
+	Elf32_Ehdr	*header;
+	Elf32_Shdr	*sheader;
+	Elf32_Shdr	*shstrhdr;
+	Elf32_Shdr	*shstr;
+	Elf32_Off	i;
+	uint32_t	j;
+	uint32_t	sym_count;
+	Elf32_Sym	*elf_sym;
 	t_dlist		*lst;
 	t_dlist		*new;
-	t_sym64		sym;
+	t_sym32		sym;
 
-	header = (Elf64_Ehdr*) ptr;
+	header = (Elf32_Ehdr*) ptr;
 	if (opt & OPT_VERBOSE)
 	{
 		switch (header->e_type)
@@ -265,7 +262,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		}
 		ft_printf("%hu program entries\n", (uint16_t)header->e_phnum);
 		ft_printf("%hu sections entries\n", (uint16_t)header->e_shnum);
-		ft_printf("Section headers offset = %lu\n", (Elf64_Off)header->e_shoff);
+		ft_printf("Section headers offset = %lu\n", (Elf32_Off)header->e_shoff);
 		ft_printf("Strings section header index = %hu\n", (uint16_t)header->e_shstrndx);
 		ft_printf("Sections header's size = %hu (total size = %d)\n", (uint16_t)header->e_shentsize,
 		header->e_shentsize * header->e_shnum);
@@ -286,7 +283,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
 	}
-	shstrhdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * header->e_shstrndx));
+	shstrhdr = (Elf32_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * header->e_shstrndx));
 	lst = NULL;
 	new = NULL;
 	sym.sym = NULL;
@@ -296,7 +293,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 	i = 0;
 	while (i < header->e_shnum)
 	{
-		sheader = (Elf64_Shdr*) (ptr + header->e_shoff
+		sheader = (Elf32_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * i));
 		// Check if the file is big enough to contain the section
 		if ((long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
@@ -313,11 +310,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			ptr + shstrhdr->sh_offset + sheader->sh_name);
 			ft_printf("Section type = %u\n", (uint32_t)sheader->sh_type);
 			ft_printf("Section flags = %u\n", (uint32_t)sheader->sh_flags);
-			ft_printf("Section size = %lu\n", (uint64_t)sheader->sh_size);
+			ft_printf("Section size = %lu\n", (uint32_t)sheader->sh_size);
 			ft_printf("Section link = %u\n", (uint32_t)sheader->sh_link);
 			ft_printf("Section info = %u\n", (uint32_t)sheader->sh_info);
-			ft_printf("Section offset = %lu\n", (uint64_t)sheader->sh_offset);
-			ft_printf("Entry size = %lu\n", (uint64_t)sheader->sh_entsize);
+			ft_printf("Section offset = %lu\n", (uint32_t)sheader->sh_offset);
+			ft_printf("Entry size = %lu\n", (uint32_t)sheader->sh_entsize);
 		}
 		if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".gnu.lto"))
 			opt |= OPT_LTO;
@@ -328,17 +325,20 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			if (opt & OPT_VERBOSE)
 				ft_printf("Symbol section has %d symbols\n",
 				sheader->sh_size / sheader->sh_entsize);
-			shstr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * sheader->sh_link));
+			shstr = (Elf32_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * sheader->sh_link));
 			while (j < sheader->sh_size / sheader->sh_entsize)
 			{
 				ft_bzero(&sym, sizeof(sym));
-				elf_sym = (Elf64_Sym *)(ptr + sheader->sh_offset + (sheader->sh_entsize * j));
-				Elf64_Shdr *shdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
-				if (elf_sym->st_info == STT_FILE || 
+				elf_sym = (Elf32_Sym *)(ptr + sheader->sh_offset + (sheader->sh_entsize * j));
+				Elf32_Shdr *shdr = NULL;
+				if (elf_sym->st_shndx < header->e_shnum)
+					shdr = (Elf32_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
+				if (!shdr || elf_sym->st_info == STT_FILE || 
 					elf_sym->st_info == STT_SECTION
 					|| elf_sym->st_shndx == SHN_COMMON
 					|| shdr->sh_flags & SHF_MASKPROC
-					|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
+					|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC
+					&& ELF32_ST_BIND(elf_sym->st_info) == STB_LOCAL
 					&& elf_sym->st_value == 0 && !ft_strequ(".text", ptr + shstrhdr->sh_offset + shdr->sh_name))
 					|| (elf_sym->st_info == 0 && elf_sym->st_value == 0 && elf_sym->st_size == 0
 					&& elf_sym->st_name == 0 && elf_sym->st_shndx == 0))
@@ -348,6 +348,8 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				}
 				sym.sym = elf_sym;
 				sym.name = ptr + shstr->sh_offset + elf_sym->st_name;
+				if (opt & OPT_VERBOSE)
+					ft_printf("------------------------------------------------\n\t\tSymbol %d\n", j);
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
 				{
@@ -356,9 +358,9 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 					return ;
 				}
 				if ((opt & OPT_C))
-					ft_dlstinsert(&lst, new, compare_names64);
+					ft_dlstinsert(&lst, new, compare_names32);
 				else
-					ft_dlstinsert(&lst, new, compare_names64);
+					ft_dlstinsert(&lst, new, compare_names32);
 				j++;
 			}
 		}

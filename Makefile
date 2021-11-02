@@ -36,7 +36,8 @@ LDFLAGS = -L $(LIBFT_DIR)
 
 LIB_RAW = 
 
-SRC_RAW =	main.c ft_nm.c handle_64.c compare.c parse_option_line.c
+SRC_RAW =	main.c ft_nm.c handle_64.c compare.c parse_option_line.c \
+			handle_32.c
 
 HEADERS =	nm.h options.h
 
