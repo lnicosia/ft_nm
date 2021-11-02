@@ -284,6 +284,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 	if ((long int)header->e_shoff + header->e_shentsize * header->e_shnum > file_size
 		|| (long int)header->e_phoff + header->e_phentsize * header->e_phnum > file_size)
 	{
+		ft_printf("Premier\n");
 		custom_error("%s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
@@ -301,8 +302,10 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		sheader = (Elf64_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * i));
 		// Check if the file is big enough to contain the section
-		if ((long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
+		if (sheader->sh_type != SHT_NOBITS
+			&& (long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
 		{
+			ft_printf("Deuxieme\n");
 			custom_error("%s: file too short\n", file);
 			custom_error("ft_nm: %s: File truncated\n", file);
 			return ;
