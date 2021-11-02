@@ -84,6 +84,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		case STT_FUNC:
 			sym->type = 't';
 			break ;
+		case STT_LOOS:
+			sym->type = 'i';
+			break ;
 	}
 	if (sym->sym->st_value == 0)
 		sym->type = 'u';
@@ -92,7 +95,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".rodata")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".eh_frame")))
 		sym->type = 'r';
-	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text")
+	if (shndx_ok && sym->type != 'i'
+		&& (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array")))
 		sym->type = 't';
@@ -113,7 +117,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			}
 			break ;
 		case STB_GLOBAL:
-			if (sym->type != 'w')
+			if (sym->type != 'w' && sym->type != 'i')
 				sym->type = ft_toupper(sym->type);
 			break ;
 	}
@@ -175,6 +179,15 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					break ;
 				case STT_HIPROC:
 					ft_printf(" HIPROC");
+					break ;
+				case STT_COMMON:
+					ft_printf(" COMMON");
+					break ;
+				case STT_LOOS:
+					ft_printf(" LOOS");
+					break ;
+				case STT_HIOS:
+					ft_printf(" HOS");
 					break ;
 			}
 			ft_printf(" (%d)", ELF64_ST_TYPE(sym->sym->st_info));
