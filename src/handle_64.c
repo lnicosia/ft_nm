@@ -311,8 +311,59 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			ft_printf("[Section %d]\n", i);
 			ft_printf("Section name = %u (%s)\n", (uint32_t)sheader->sh_name,
 			ptr + shstrhdr->sh_offset + sheader->sh_name);
-			ft_printf("Section type = %u\n", (uint32_t)sheader->sh_type);
-			ft_printf("Section flags = %u\n", (uint32_t)sheader->sh_flags);
+			ft_printf("Section type = %u", (uint32_t)sheader->sh_type);
+			switch (sheader->sh_type)
+			{
+				case SHT_NULL:
+					ft_printf(" (NULL)");
+					break ;
+				case SHT_PROGBITS:
+					ft_printf(" (PROGBITS)");
+					break ;
+				case SHT_SYMTAB:
+					ft_printf(" (SYMTAB)");
+					break ;
+				case SHT_STRTAB:
+					ft_printf(" (STRTAB)");
+					break ;
+				case SHT_RELA:
+					ft_printf(" (RELA)");
+					break ;
+				case SHT_HASH:
+					ft_printf(" (HASH)");
+					break ;
+				case SHT_DYNAMIC:
+					ft_printf(" (DYNAMIC)");
+					break ;
+				case SHT_NOTE:
+					ft_printf(" (NOTE)");
+					break ;
+				case SHT_NOBITS:
+					ft_printf(" (NOBITS)");
+					break ;
+				case SHT_REL:
+					ft_printf(" (REL)");
+					break ;
+				case SHT_SHLIB:
+					ft_printf(" (SHLIB)");
+					break ;
+				case SHT_DYNSYM:
+					ft_printf(" (DYNSYM)");
+					break ;
+				case SHT_LOPROC:
+					ft_printf(" (LOPROC)");
+					break ;
+				case SHT_HIPROC:
+					ft_printf(" (HIPROC)");
+					break ;
+				case SHT_LOUSER:
+					ft_printf(" (LOUSER)");
+					break ;
+				case SHT_HIUSER:
+					ft_printf(" (HIUSER)");
+					break ;
+			}
+			ft_printf("\nSection flags = %u\n", (uint32_t)sheader->sh_flags);
 			ft_printf("Section size = %lu\n", (uint64_t)sheader->sh_size);
 			ft_printf("Section link = %u\n", (uint32_t)sheader->sh_link);
 			ft_printf("Section info = %u\n", (uint32_t)sheader->sh_info);
