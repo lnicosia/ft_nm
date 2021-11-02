@@ -98,6 +98,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		sym->type = 't';
 	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
 		sym->type = 'b';
+	if (!shndx_ok && sym->sym->st_shndx == SHN_ABS)
+		sym->type = 'a';
 	switch (ELF64_ST_BIND(sym->sym->st_info))
 	{
 		case STB_WEAK:
@@ -387,10 +389,10 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				Elf64_Shdr *shdr = NULL;
 				if (elf_sym->st_shndx < header->e_shnum)
 					shdr = (Elf64_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
-				if (!shdr || elf_sym->st_info == STT_FILE
+				if ((!shdr && elf_sym->st_shndx != SHN_ABS) || elf_sym->st_info == STT_FILE
 					|| elf_sym->st_info == STT_SECTION
 					|| elf_sym->st_shndx == SHN_COMMON
-					|| shdr->sh_flags & SHF_MASKPROC
+					|| (shdr && shdr->sh_flags & SHF_MASKPROC)
 					|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
 					&& elf_sym->st_value == 0 && !ft_strequ(".text", ptr + shstrhdr->sh_offset + shdr->sh_name))
 					|| (elf_sym->st_info == 0 && elf_sym->st_value == 0 && elf_sym->st_size == 0
