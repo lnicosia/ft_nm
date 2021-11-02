@@ -18,5 +18,7 @@
 # define OPT_C (1 << 2)
 # define OPT_P (1 << 3)
 # define OPT_PRINT_FILE_NAME (1 << 4)
+# define OPT_S (1 << 5)
+# define OPT_LTO (1 << 6)
 
 #endif

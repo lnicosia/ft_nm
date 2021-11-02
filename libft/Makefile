@@ -65,13 +65,13 @@ PRINTF_OBJ = $(addprefix $(OBJ_DIR)/, $(PRINTF_SRC_RAW:.c=.o))
 ifeq ($(OS), Windows_NT)
 	OPTI_FLAGS = -O3
 else
-    OPTI_FLAGS = -O3 -flto
+    OPTI_FLAGS = -O3
 endif
 
 CFLAGS = -Wall -Wextra -Werror -Wpadded -I $(INCLUDES_DIR) -I $(PRINTF_DIR) \
 			-Wno-unused-result -Wno-misleading-indentation \
 			$(OPTI_FLAGS) \
-			-fsanitize=address -g3 \
+			#-fsanitize=address -g3 \
 
 # Color declarations
 RED := "\e[0;31m"

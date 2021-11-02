@@ -16,21 +16,15 @@
 int		check_opt(char av, int *opt)
 {
 	if (av == 'a')
-	{
 		*opt |= OPT_A;
-	}
 	else if (av == 'v')
-	{
 		*opt |= OPT_VERBOSE;
-	}
 	else if (av == 'c')
-	{
 		*opt |= OPT_C;
-	}
 	else if (av == 'p')
-	{
 		*opt |= OPT_P;
-	}
+	else if (av == 's')
+		*opt |= OPT_S;
 	return (0);
 }
 
