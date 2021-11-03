@@ -74,13 +74,17 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint64_t)sym->sym->st_size);
 	}
-	sym->type = 'r';
+	if (shndx_ok)
+	{
+		if (sheader->sh_type == SHT_NOBITS)
+			sym->type = 'b';
+		else if (!(sheader->sh_flags & SHF_WRITE))
+			sym->type = 'r';
+		else	
+			sym->type = 'd';
+	}
 	switch (ELF64_ST_TYPE(sym->sym->st_info))
 	{
-		case STT_OBJECT:
-			if (shndx_ok && sheader->sh_flags == 3)
-				sym->type = 'd';
-			break ;
 		case STT_FUNC:
 			sym->type = 't';
 			break ;
@@ -88,28 +92,39 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			sym->type = 'i';
 			break ;
 	}
-	if (sym->sym->st_value == 0)
+	if (sym->sym->st_value == 0 && sym->type != 'b')
 		sym->type = 'u';
-	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "data"))
+	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".data")
+		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".tm_clone_table")
+		|| ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "preinit_array")))
 		sym->type = 'd';
 	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".rodata")
-		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".eh_frame")))
+		|| ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".gnu.offload")))
 		sym->type = 'r';
+	if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".eh_frame"))
+	{
+		if (sheader->sh_type == SHT_NOBITS)
+			sym->type = 'b';
+		else
+			sym->type = 'r';
+	}
 	if (shndx_ok && sym->type != 'i'
 		&& (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".text")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".init_array")
 		|| ft_strequ(ptr + shstrhdr->sh_offset + sheader->sh_name, ".fini_array")))
 		sym->type = 't';
-	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss"))
+	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "bss")))
 		sym->type = 'b';
 	if (!shndx_ok && sym->sym->st_shndx == SHN_ABS)
 		sym->type = 'a';
+	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "warning")))
+		sym->type = 'n';
 	switch (ELF64_ST_BIND(sym->sym->st_info))
 	{
 		case STB_WEAK:
 			if (ELF64_ST_TYPE(sym->sym->st_info) == STT_OBJECT)
 				sym->type = 'V';
-			else
+			else if (ELF64_ST_TYPE(sym->sym->st_info) != STT_LOOS)
 			{
 				sym->type = 'w';
 				if (shndx_ok && sheader->sh_flags != 0)
@@ -302,7 +317,6 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 	if ((long int)header->e_shoff + header->e_shentsize * header->e_shnum > file_size
 		|| (long int)header->e_phoff + header->e_phentsize * header->e_phnum > file_size)
 	{
-		ft_printf("Premier\n");
 		custom_error("%s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
@@ -323,7 +337,6 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		if (sheader->sh_type != SHT_NOBITS
 			&& (long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
 		{
-			ft_printf("Deuxieme\n");
 			custom_error("%s: file too short\n", file);
 			custom_error("ft_nm: %s: File truncated\n", file);
 			return ;
@@ -423,6 +436,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 					continue;
 				}
 				sym.sym = elf_sym;
+				sym.type = 0;
 				sym.name = ptr + shstr->sh_offset + elf_sym->st_name;
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
@@ -441,9 +455,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".gnu.lto_.symtab"))
 		{
 			if (opt & OPT_VERBOSE)
-			ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+			custom_error("ft_nm: %s: File optimized with -flto\n", file);
+			return ;
 		}
-		if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
+		/*if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
 		{
 			ft_printf("{cyan}String table{reset}\n");
 			//ft_printf("String section has %d entries\n", sheader->sh_size / sheader->sh_entsize);
@@ -458,7 +474,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				j++;
 			}
 			ft_printf("\n");
-		}
+		}*/
 		i++;
 	}
 	if (opt & OPT_PRINT_FILE_NAME)

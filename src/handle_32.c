@@ -74,13 +74,17 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ft_printf("\tValue = %016x\n", sym->sym->st_value);
 		ft_printf("\tSize = %lu\n", (uint32_t)sym->sym->st_size);
 	}
-	sym->type = 'r';
+	if (shndx_ok)
+	{
+		if (sheader->sh_type == SHT_NOBITS)
+			sym->type = 'b';
+		else if (!(sheader->sh_flags & SHF_WRITE))
+			sym->type = 'r';
+		else
+			sym->type = 'd';
+	}
 	switch (ELF32_ST_TYPE(sym->sym->st_info))
 	{
-		case STT_OBJECT:
-			if (shndx_ok && sheader->sh_flags == 3)
-				sym->type = 'd';
-			break ;
 		case STT_FUNC:
 			sym->type = 't';
 			break ;
@@ -88,7 +92,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			sym->type = 'i';
 			break ;
 	}
-	if (sym->sym->st_value == 0)
+	if (sym->sym->st_value == 0 && sym->type != 'b')
 		sym->type = 'u';
 	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "data"))
 		sym->type = 'd';
@@ -111,7 +115,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		case STB_WEAK:
 			if (ELF32_ST_TYPE(sym->sym->st_info) == STT_OBJECT)
 				sym->type = 'V';
-			else
+			else if (ELF64_ST_TYPE(sym->sym->st_info) != STT_LOOS)
 			{
 				sym->type = 'w';
 				if (shndx_ok && sheader->sh_flags != 0)
@@ -317,6 +321,14 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	{
 		sheader = (Elf32_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * i));
+		// Check if the file is big enough to contain the section
+		if (sheader->sh_type != SHT_NOBITS
+			&& (long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
+		{
+			custom_error("%s: file too short\n", file);
+			custom_error("ft_nm: %s: File truncated\n", file);
+			return ;
+		}
 		if (opt & OPT_VERBOSE)
 		{
 			ft_printf("------------------------------\n");
@@ -382,14 +394,6 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 			ft_printf("Section offset = %lu\n", (uint32_t)sheader->sh_offset);
 			ft_printf("Entry size = %lu\n", (uint32_t)sheader->sh_entsize);
 		}
-		// Check if the file is big enough to contain the section
-		if (sheader->sh_type != SHT_NOBITS
-			&& (long int)sheader->sh_offset + (long int)sheader->sh_size > file_size)
-		{
-			custom_error("%s: file too short\n", file);
-			custom_error("ft_nm: %s: File truncated\n", file);
-			return ;
-		}
 		if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".gnu.lto"))
 			opt |= OPT_LTO;
 		if (sheader->sh_type == SHT_SYMTAB)
@@ -411,8 +415,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					|| elf_sym->st_info == STT_SECTION
 					|| elf_sym->st_shndx == SHN_COMMON
 					|| (shdr && shdr->sh_flags & SHF_MASKPROC)
-					|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC
-					&& ELF32_ST_BIND(elf_sym->st_info) == STB_LOCAL
+					|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF32_ST_BIND(elf_sym->st_info) == STB_LOCAL
 					&& elf_sym->st_value == 0 && ft_strequ(".text.unlikely", ptr + shstrhdr->sh_offset + shdr->sh_name))
 					|| (elf_sym->st_info == 0 && elf_sym->st_value == 0 && elf_sym->st_size == 0
 					&& elf_sym->st_name == 0 && elf_sym->st_shndx == 0))
@@ -421,9 +424,8 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					continue;
 				}
 				sym.sym = elf_sym;
+				sym.type = 0;
 				sym.name = ptr + shstr->sh_offset + elf_sym->st_name;
-				if (opt & OPT_VERBOSE)
-					ft_printf("------------------------------------------------\n\t\tSymbol %d\n", j);
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
 				{
@@ -441,7 +443,9 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 		if (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".gnu.lto_.symtab"))
 		{
 			if (opt & OPT_VERBOSE)
-			ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+			custom_error("ft_nm: %s: File optimized with -flto\n", file);
+			return ;
 		}
 		if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
 		{
