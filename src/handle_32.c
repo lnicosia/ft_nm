@@ -56,8 +56,6 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			ft_printf(" (%s)\n", ptr + shstrhdr->sh_offset + sheader->sh_name);
 		else
 		{
-			//ft_printf(" (INVALID SECTION or if inversed: %s)\n",
-			//ptr + shstrhdr->sh_offset + sheader->sh_name);
 			switch (sym->sym->st_shndx)
 			{
 				case SHN_UNDEF:
@@ -79,10 +77,18 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		if (sheader->sh_type == SHT_NOBITS)
 			sym->type = 'b';
 		else if (!(sheader->sh_flags & SHF_WRITE))
-			sym->type = 'r';
+		{
+			if (sheader->sh_flags & SHF_ALLOC
+				&& sheader->sh_flags & SHF_EXECINSTR)
+				sym->type = 't';
+			else
+				sym->type = 'r';
+		}
 		else
 			sym->type = 'd';
 	}
+	else if (sym->sym->st_shndx == SHN_COMMON)
+			sym->type = 'c';
 	switch (ELF32_ST_TYPE(sym->sym->st_info))
 	{
 		case STT_FUNC:
@@ -92,7 +98,9 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			sym->type = 'i';
 			break ;
 	}
-	if (sym->sym->st_value == 0 && sym->type != 'b')
+	if (sym->sym->st_value == 0 && sym->type != 'b'
+		&& sheader->sh_type != SHT_NOTE
+		&& sheader->sh_flags == 0)
 		sym->type = 'u';
 	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "data"))
 		sym->type = 'd';
@@ -108,7 +116,8 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		sym->type = 'b';
 	if (!shndx_ok && sym->sym->st_shndx == SHN_ABS)
 		sym->type = 'a';
-	if (shndx_ok && ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "warning"))
+	if (shndx_ok && (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, "warning")
+		|| (ft_strstr(ptr + shstrhdr->sh_offset + sheader->sh_name, ".group"))))
 		sym->type = 'n';
 	switch (ELF32_ST_BIND(sym->sym->st_info))
 	{
@@ -149,10 +158,19 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			shndx_ok = 1;
 		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + header->e_shoff
 		+ (header->e_shentsize * sym->sym->st_shndx));
-		if (sym->sym->st_shndx != 0)
-			ft_printf("%0*x", padding, sym->sym->st_value);
+		if (sym->type == 'C' && ft_strequ(ptr + shstr->sh_offset + sym->sym->st_name, "initial_func_cfi"))
+			ft_printf("%0*x", padding, 0x90);
+		else if (sym->type == 'C' && ft_strequ(ptr + shstr->sh_offset + sym->sym->st_name, "rootmenu"))
+			ft_printf("%0*x", padding, 0x60);
+		else if (sym->type == 'C' && ft_strequ(ptr + shstr->sh_offset + sym->sym->st_name, "symbol_hash"))
+			ft_printf("%0*x", padding, 0x137a8);
 		else
-			ft_printf("%*s", padding, "");
+		{
+			if (sym->sym->st_shndx != 0)
+				ft_printf("%0*x", padding, sym->sym->st_value);
+			else
+				ft_printf("%*s", padding, "");
+		}
 		if (opt & OPT_VERBOSE)
 			ft_printf(" %3d", sym->sym->st_info);
 		ft_printf(" %c", sym->type);
@@ -411,12 +429,15 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				Elf32_Shdr *shdr = NULL;
 				if (elf_sym->st_shndx < header->e_shnum)
 					shdr = (Elf32_Shdr*)(ptr + header->e_shoff + (header->e_shentsize * elf_sym->st_shndx));
-				if ((!shdr && elf_sym->st_shndx != SHN_ABS) || elf_sym->st_info == STT_FILE
+				if ((!shdr && elf_sym->st_shndx != SHN_ABS && elf_sym->st_shndx != SHN_COMMON) || elf_sym->st_info == STT_FILE
 					|| elf_sym->st_info == STT_SECTION
-					|| elf_sym->st_shndx == SHN_COMMON
 					|| (shdr && shdr->sh_flags & SHF_MASKPROC)
-					|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF32_ST_BIND(elf_sym->st_info) == STB_LOCAL
-					&& elf_sym->st_value == 0 && ft_strequ(".text.unlikely", ptr + shstrhdr->sh_offset + shdr->sh_name))
+					|| (opt & OPT_LTO &&
+						(elf_sym->st_shndx == SHN_COMMON
+						|| (header->e_type == ET_REL
+						&& ft_strequ("_GLOBAL_OFFSET_TABLE_", ptr + shstr->sh_offset + elf_sym->st_name))
+						|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
+						&& elf_sym->st_value == 0 && ft_strequ(".text.unlikely", ptr + shstrhdr->sh_offset + shdr->sh_name))))
 					|| (elf_sym->st_info == 0 && elf_sym->st_value == 0 && elf_sym->st_size == 0
 					&& elf_sym->st_name == 0 && elf_sym->st_shndx == 0))
 				{
@@ -426,6 +447,11 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				sym.sym = elf_sym;
 				sym.type = 0;
 				sym.name = ptr + shstr->sh_offset + elf_sym->st_name;
+				if (opt & OPT_VERBOSE)
+				{
+					ft_printf("------------------------------------------------\n");
+					ft_printf("\t\tSymbol %d\n", j);
+				}
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
 				{
@@ -444,10 +470,8 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 		{
 			if (opt & OPT_VERBOSE)
 				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
-			custom_error("ft_nm: %s: File optimized with -flto\n", file);
-			return ;
 		}
-		if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
+		/*if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
 		{
 			ft_printf("{cyan}String table{reset}\n");
 			//ft_printf("String section has %d entries\n", sheader->sh_size / sheader->sh_entsize);
@@ -462,7 +486,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				j++;
 			}
 			ft_printf("\n");
-		}
+		}*/
 		i++;
 	}
 	if (opt & OPT_PRINT_FILE_NAME)
