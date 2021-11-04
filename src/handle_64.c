@@ -435,7 +435,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				ft_printf("Symbol section has %d symbols\n",
 				read_uint64(sheader->sh_size, opt) / read_uint64(sheader->sh_entsize, opt));
 			shstr = (Elf64_Shdr*)(ptr + read_long_unsigned_int(header->e_shoff, opt)
-			+ (read_uint64(header->e_shentsize, opt) * read_uint32(sheader->sh_link, opt)));
+			+ (read_uint16(header->e_shentsize, opt) * read_uint32(sheader->sh_link, opt)));
 			while (j < read_uint64(sheader->sh_size, opt) / read_uint64(sheader->sh_entsize, opt))
 			{
 				ft_bzero(&sym, sizeof(sym));

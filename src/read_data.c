@@ -33,7 +33,7 @@ uint32_t	read_uint32(uint32_t nb, int endian)
 	return (res);
 }
 
-uint64_t	read_uint64(uint32_t nb, int endian)
+uint64_t	read_uint64(uint64_t nb, int endian)
 {
 	uint64_t	res;
 
