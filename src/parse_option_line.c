@@ -13,17 +13,17 @@
 #include "options.h"
 #include "libft.h"
 
-int		check_opt(char av, int *opt)
+int		check_opt(char *av, int *opt)
 {
-	if (av == 'a')
+	if (*av == 'a')
 		*opt |= OPT_A;
-	else if (av == 'v')
+	else if (ft_strequ(av, "-verbose"))
 		*opt |= OPT_VERBOSE;
-	else if (av == 'c')
+	else if (*av == 'c')
 		*opt |= OPT_C;
-	else if (av == 'p')
+	else if (*av == 'p')
 		*opt |= OPT_P;
-	else if (av == 's')
+	else if (*av == 's')
 		*opt |= OPT_S;
 	return (0);
 }
@@ -33,7 +33,7 @@ int		parse_option_line(char *av, int *opt)
 	av++;
 	while (*av)
 	{
-		check_opt(*av, opt);
+		check_opt(av, opt);
 		av++;
 	}
 	return (0);

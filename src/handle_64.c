@@ -99,7 +99,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".tm_clone_table")
 		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "preinit_array")))
 		sym->type = 'd';
-	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
+	if (shndx_ok && (ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
 		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".gnu.offload")))
 		sym->type = 'r';
 	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".eh_frame"))
@@ -112,7 +112,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	if (shndx_ok && sym->type != 'i'
 		&& (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".text")
 		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init_array")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".fini_array")))
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".fini_array")
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.rodata")))
 		sym->type = 't';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "bss")))
 		sym->type = 'b';
@@ -176,6 +177,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		else if (sym->type == 'C'
 			&& ft_strequ(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym->st_name, opt), "symbol_hash"))
 			ft_printf("%0*x", padding, 0x137a8);
+		else if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym->st_name, opt), "vclock_page")
+			|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym->st_name, opt), "vvar_"))
+			ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, read_long_unsigned_int(sym->sym->st_value, opt));
 		else
 		{
 			if (read_uint16(sym->sym->st_shndx, opt) != 0)
