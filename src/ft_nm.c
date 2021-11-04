@@ -27,6 +27,10 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 	if (ptr[0] == ELFMAG0 && ptr[1] == ELFMAG1
 		&& ptr[2] == ELFMAG2 && ptr[3] == ELFMAG3)
 	{
+		if (ptr[5] == ELFDATA2MSB)
+			opt |= OPT_BIG_ENDIAN;
+		else
+			opt |= OPT_LITTLE_ENDIAN;
 		//ft_printf("ELF binary\n");
 		if (ptr[4] == ELFCLASS64)
 		{

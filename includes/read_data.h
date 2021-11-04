@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   options.h                                          :+:      :+:    :+:   */
+/*   read_data.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/06 15:26:24 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/23 09:17:55 by lnicosia         ###   ########.fr       */
+/*   Created: 2021/04/05 32:05:36 by lnicosia          #+#    #+#             */
+/*   Updated: 2021/09/23 09:21:42 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef OPTIONS_H
-# define OPTIONS_H
+#ifndef READ_DATA_H
+# define READ_DATA_H
 
-# define OPT_A (1 << 0)
-# define OPT_VERBOSE (1 << 1)
-# define OPT_C (1 << 2)
-# define OPT_P (1 << 3)
-# define OPT_PRINT_FILE_NAME (1 << 4)
-# define OPT_S (1 << 5)
-# define OPT_LTO (1 << 6)
-# define OPT_LITTLE_ENDIAN (1 << 7)
-# define OPT_BIG_ENDIAN (1 << 8)
+uint16_t		read_uint16(uint16_t nb, int endian);
+uint32_t		read_uint32(uint32_t nb, int endian);
+unsigned int	read_unsigned_int(unsigned int nb, int endian);
+int				read_int(int nb, int endian);
 
 #endif

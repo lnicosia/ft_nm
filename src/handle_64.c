@@ -13,6 +13,7 @@
 #include "nm.h"
 #include "libft.h"
 #include "options.h"
+#include "read_data.h"
 #include <limits.h>
 
 /*

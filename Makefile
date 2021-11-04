@@ -37,9 +37,9 @@ LDFLAGS = -L $(LIBFT_DIR)
 LIB_RAW = 
 
 SRC_RAW =	main.c ft_nm.c handle_64.c compare.c parse_option_line.c \
-			handle_32.c
+			handle_32.c read_data.c
 
-HEADERS =	nm.h options.h
+HEADERS =	nm.h options.h read_data.h
 
 #
 # Creation of files path

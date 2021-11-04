@@ -151,6 +151,7 @@ int					valid_hexa(char *line);
 char				*ft_rmchar(char *str, char c);
 void				print_bits(void *ptr, size_t length);
 void				reverse_bits(void *ptr, size_t length);
+void				reverse_endian(void *ptr, size_t length);
 
 /*
 **	Double linked list functions

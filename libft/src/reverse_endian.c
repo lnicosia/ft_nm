@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_bits.c                                       :+:      :+:    :+:   */
+/*   reverse_endian.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,15 +12,29 @@
 
 #include "libft.h"
 
-void	print_bits(void *ptr, size_t length)
+#define MAX_BYTES 32
+
+/*
+** Length in bytes
+*/
+
+void	reverse_endian(void *ptr, size_t length)
 {
 	uint8_t *bytes = (uint8_t *)ptr;
-	for (size_t i = 0; i < length / 8; i++)
+	uint8_t tmp[MAX_BYTES] = { 0 };
+	
+	if (length > MAX_BYTES)
 	{
-		for (size_t j = 0; j < 8; j++)
-		{
-			ft_printf("%d ", (bytes[(length / 8) - i - 1] >> (8 - j - 1)) & 1);
-		}
-		ft_printf(" ");
+		custom_error("reverse_bits error: Trying to reverse the endian of an array bigger than %d\n",
+		MAX_BYTES);
+		return ;
+	}
+	for (size_t i = 0; i < length; i++)
+	{
+		tmp[i] = bytes[length - 1 - i];
+	}
+	for (size_t i = 0; i < length; i++)
+	{
+		bytes[i] = tmp[i];
 	}
 }
