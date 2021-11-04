@@ -322,13 +322,15 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 
 	}
 	// Check if the file is big enough to contain all the section headers
-	/*if ((long int)header->e_shoff + header->e_shentsize * header->e_shnum > file_size
-		|| (long int)header->e_phoff + header->e_phentsize * header->e_phnum > file_size)
+	if ((long int)read_unsigned_int(header->e_shoff, opt)
+		+ read_uint16(header->e_shentsize, opt) * read_uint16(header->e_shnum, opt) > file_size
+		|| (long int)read_unsigned_int(header->e_phoff, opt)
+		+ read_uint16(header->e_phentsize, opt) * read_uint16(header->e_phnum, opt) > file_size)
 	{
 		custom_error("%s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
-	}*/
+	}
 	shstrhdr = (Elf32_Shdr*)(ptr + read_unsigned_int(header->e_shoff, opt)
 	+ (read_uint16(header->e_shentsize, opt) * read_uint16(header->e_shstrndx, opt)));
 	lst = NULL;
@@ -344,7 +346,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 		+ (read_uint16(header->e_shentsize, opt) * i));
 		// Check if the file is big enough to contain the section
 		if (read_uint32(sheader->sh_type, opt) != SHT_NOBITS
-			&& (long int)read_uint32(sheader->sh_offset, opt)
+			&& (long int)read_unsigned_int(sheader->sh_offset, opt)
 			+ (long int)read_uint32(sheader->sh_size, opt) > file_size)
 		{
 			custom_error("%s: file too short\n", file);

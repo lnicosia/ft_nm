@@ -33,6 +33,16 @@ uint32_t	read_uint32(uint32_t nb, int endian)
 	return (res);
 }
 
+uint64_t	read_uint64(uint32_t nb, int endian)
+{
+	uint64_t	res;
+
+	res = nb;
+	if (endian & OPT_BIG_ENDIAN)
+		reverse_endian(&res, sizeof(uint64_t));
+	return (res);
+}
+
 unsigned int	read_unsigned_int(unsigned int nb, int endian)
 {
 	unsigned int	res;
@@ -40,6 +50,16 @@ unsigned int	read_unsigned_int(unsigned int nb, int endian)
 	res = nb;
 	if (endian & OPT_BIG_ENDIAN)
 		reverse_endian(&res, sizeof(unsigned int));
+	return (res);
+}
+
+long unsigned int	read_long_unsigned_int(long unsigned int nb, int endian)
+{
+	long unsigned int	res;
+
+	res = nb;
+	if (endian & OPT_BIG_ENDIAN)
+		reverse_endian(&res, sizeof(long unsigned int));
 	return (res);
 }
 

@@ -13,9 +13,11 @@
 #ifndef READ_DATA_H
 # define READ_DATA_H
 
-uint16_t		read_uint16(uint16_t nb, int endian);
-uint32_t		read_uint32(uint32_t nb, int endian);
-unsigned int	read_unsigned_int(unsigned int nb, int endian);
-int				read_int(int nb, int endian);
+uint16_t			read_uint16(uint16_t nb, int endian);
+uint32_t			read_uint32(uint32_t nb, int endian);
+uint64_t			read_uint64(uint64_t nb, int endian);
+unsigned int		read_unsigned_int(unsigned int nb, int endian);
+long unsigned int	read_long_unsigned_int(long unsigned int nb, int endian);
+int					read_int(int nb, int endian);
 
 #endif
