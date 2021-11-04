@@ -118,9 +118,13 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		sym->type = 'b';
 	if (!shndx_ok && read_uint16(sym->sym->st_shndx, opt) == SHN_ABS)
 		sym->type = 'a';
+	if (shndx_ok && read_uint64(sheader->sh_flags, opt) == (SHF_MERGE | SHF_STRINGS))
+		sym->type = 'n';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "warning")
 		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))))
 		sym->type = 'n';
+	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug"))
+		sym->type = 'N';
 	switch (ELF64_ST_BIND(sym->sym->st_info))
 	{
 		case STB_WEAK:
@@ -254,6 +258,28 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					ft_printf(" EXECINSTR");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKPROC)
 					ft_printf(" MASKPROC");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_MERGE)
+					ft_printf(" MERGE");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_STRINGS)
+					ft_printf(" STRINGS");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_INFO_LINK)
+					ft_printf(" INFO_LINK");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_LINK_ORDER)
+					ft_printf(" LINK_ORDER");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_OS_NONCONFORMING)
+					ft_printf(" OS_NONCONFORMING");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_GROUP)
+					ft_printf(" GROUP");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_TLS)
+					ft_printf(" TLS");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKOS)
+					ft_printf(" MASKOS");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_MIPS_MERGE)
+					ft_printf(" MIPS_MERGE");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_ORDERED)
+					ft_printf(" ORDERED");
+				if (read_uint64(sheader->sh_flags, opt) & SHF_EXCLUDE)
+					ft_printf(" EXCLUDE");
 				ft_printf(" (%d)", read_uint64(sheader->sh_flags, opt));
 			}
 			else
