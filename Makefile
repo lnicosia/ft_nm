@@ -71,11 +71,11 @@ ifeq ($(OS), Windows_NT)
 else
 	UNAME_S = $(shell uname -s)
     ifeq ($(UNAME_S),Darwin)
-		#OPTI_FLAGS += -flto
+		OPTI_FLAGS += -flto
 		SED = gsed
     else
 		CFLAGS += -Wno-misleading-indentation
-		#OPTI_FLAGS += -flto
+		OPTI_FLAGS += -flto
     endif
 endif
 

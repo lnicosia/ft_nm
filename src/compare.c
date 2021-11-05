@@ -234,8 +234,8 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 		//if (ft_strequ(str1, "free@@GLIBC_2.2.5")
 		//|| ft_strequ(str1, "free@@GLIBC_2.2.5"))
 		//	ft_printf("Ignored diff\n");
-		//if (sym1->sym->st_value != sym2->sym->st_value)
-		//	return (sym1->sym->st_value > sym2->sym->st_value);
+		//if (sym1->sym.st_value != sym2->sym.st_value)
+		//	return (sym1->sym.st_value > sym2->sym.st_value);
 		//if (ft_strequ(str1, "time.Time.date") && ft_strequ(str2, "time.Time.date"))
 		//	ft_printf("Ignored diff = %d\n", ignored);
 		if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
@@ -253,8 +253,8 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 	}
 	if (ft_tolower(*s1) != ft_tolower(*s2))
 		return (ft_tolower(*s1) - ft_tolower(*s2));
-	//if (ELF64_ST_TYPE(sym1->sym->st_info) != ELF64_ST_TYPE(sym2->sym->st_info))
-//		return (ELF64_ST_TYPE(sym1->sym->st_info) < ELF64_ST_TYPE(sym2->sym->st_info));
+	//if (ELF64_ST_TYPE(sym1->sym.st_info) != ELF64_ST_TYPE(sym2->sym.st_info))
+//		return (ELF64_ST_TYPE(sym1->sym.st_info) < ELF64_ST_TYPE(sym2->sym.st_info));
 	//if (ft_strequ(str1, "runtime/cgo(.text)") && ft_strequ(str2, "runtime/cgo(.text)"))
 	//	ft_printf("COUCOU\n");
 	// Last comparison is between the addresses
@@ -262,15 +262,15 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 	//if (ft_strequ(str1, "free@@GLIBC_2.2.5")
 	//|| ft_strequ(str1, "free@@GLIBC_2.2.5"))
 	//	ft_printf("No diff\n");
-	if (sym1->sym->st_info != sym2->sym->st_info)
-		return (sym1->sym->st_info > sym2->sym->st_info);
-	if (sym1->sym->st_value != sym2->sym->st_value)
+	if (sym1->sym.st_info != sym2->sym.st_info)
+		return (sym1->sym.st_info > sym2->sym.st_info);
+	if (sym1->sym.st_value != sym2->sym.st_value)
 	{
 		//if (ft_strequ(str1, "time.Time.date") && ft_strequ(str2, "time.Time.date"))
 		//	ft_printf("Address diff\n");
 		if (sym1->type == 'b')
-			return (sym1->sym->st_value < sym2->sym->st_value);
-		return (sym1->sym->st_value > sym2->sym->st_value);
+			return (sym1->sym.st_value < sym2->sym.st_value);
+		return (sym1->sym.st_value > sym2->sym.st_value);
 	}
 	return (0);
 }

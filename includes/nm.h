@@ -31,7 +31,7 @@ typedef struct stat	t_stat;
 
 typedef struct		s_sym64
 {
-	Elf64_Sym		*sym;
+	Elf64_Sym		sym;
 	char			*name;
 	int				type;
 	char			padding[4];
@@ -39,7 +39,7 @@ typedef struct		s_sym64
 
 typedef struct		s_sym32
 {
-	Elf32_Sym		*sym;
+	Elf32_Sym		sym;
 	char			*name;
 	int				type;
 	char			padding[4];
