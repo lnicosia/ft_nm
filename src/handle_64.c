@@ -100,12 +100,16 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "preinit_array")))
 		sym->type = 'd';
 	if (shndx_ok && (ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
-		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".gnu.offload")))
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".gnu.offload")
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".exit.data")))
 		sym->type = 'r';
 	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".eh_frame"))
 	{
 		if (read_uint32(sheader->sh_type, opt) == SHT_NOBITS)
 			sym->type = 'b';
+		else if (read_uint32(sheader->sh_type, opt) == SHT_PROGBITS
+			&& read_uint64(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_WRITE))
+			sym->type = 'd';
 		else
 			sym->type = 'r';
 	}
@@ -113,7 +117,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		&& (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".text")
 		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init_array")
 		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".fini_array")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.rodata")))
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.rodata")
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.data")))
 		sym->type = 't';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "bss")))
 		sym->type = 'b';
