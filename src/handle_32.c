@@ -100,10 +100,10 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		&& read_uint32(sheader->sh_flags, opt) == 0)
 		sym->type = 'u';
 	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "data")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".tm_clone_table")
-		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "preinit_array")))
+		|| ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".tm_clone_table")
+		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "preinit_array")))
 		sym->type = 'd';
-	if (shndx_ok && (ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
+	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
 		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".gnu.offload")
 		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".exit.data")))
 		sym->type = 'r';
@@ -146,7 +146,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 				else
 					sym->type = 'V';
 			}
-			else if (ELF64_ST_TYPE(sym->sym.st_info) != STT_LOOS)
+			else if (ELF32_ST_TYPE(sym->sym.st_info) != STT_LOOS)
 			{
 				sym->type = 'w';
 				if (shndx_ok && read_uint32(sheader->sh_flags, opt) != 0)
@@ -187,7 +187,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			ft_printf("%0*x", padding, read_uint32(sym->sym.st_size, opt));
 		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, read_unsigned_int(sym->sym.st_value, opt));
+			ft_printf("%0*x", padding / 2, read_unsigned_int(sym->sym.st_value, opt));
 		else
 		{
 			if (read_uint16(sym->sym.st_shndx, opt) != 0)
@@ -538,7 +538,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 						|| (read_uint16(header->e_type, opt) == ET_REL
 						&& ft_strequ("_GLOBAL_OFFSET_TABLE_",
 						ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(elf_sym->st_name, opt)))
-						|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
+						|| (ELF32_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF32_ST_BIND(elf_sym->st_info) == STB_LOCAL
 						&& read_unsigned_int(elf_sym->st_value, opt) == 0
 						&& ft_strequ(".text.unlikely", ptr
 						+ read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(shdr->sh_name, opt)))))
@@ -636,9 +636,9 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 						return ;
 					}
 					if ((opt & OPT_C))
-						ft_dlstinsert(&lst, new, compare_names64);
+						ft_dlstinsert(&lst, new, compare_names32);
 					else
-						ft_dlstinsert(&lst, new, compare_names64);
+						ft_dlstinsert(&lst, new, compare_names32);
 				}
 				j++;
 			}
