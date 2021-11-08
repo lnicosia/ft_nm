@@ -29,21 +29,14 @@ static void			delsym(void *file, size_t size)
 static void	set_symbol_type(t_sym32 *sym, char *ptr, Elf32_Ehdr *header,
 Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
-	uint16_t	shndx;
 	int			shndx_ok;
 
 	if (read_uint16(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
-	{
-		shndx = (uint16_t)~read_uint16(sym->sym.st_shndx, opt);
 		shndx_ok = 0;
-	}
 	else
-	{
-		shndx = read_uint16(sym->sym.st_shndx, opt);
 		shndx_ok = 1;
-	}
 	Elf32_Shdr *sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
-		+ (read_uint16(header->e_shentsize, opt) * shndx));
+		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
 	if (opt & OPT_VERBOSE)
 	{
 		ft_printf("------------------------------------------------\n");
@@ -51,7 +44,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt));
 		ft_printf("\tInfo = %d\n", sym->sym.st_info);
 		ft_printf("\tOther = %d\n", sym->sym.st_other);
-		ft_printf("\tSection = %hu", shndx);
+		ft_printf("\tSection = %hu", read_uint16(sym->sym.st_shndx, opt));
 		if (shndx_ok)
 			ft_printf(" (%s)\n", ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt));
@@ -93,21 +86,37 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 	switch (ELF32_ST_TYPE(sym->sym.st_info))
 	{
 		case STT_FUNC:
-			sym->type = 't';
+			if (read_uint16(sym->sym.st_shndx, opt) == 0)
+				sym->type = 'u';
+			else
+				sym->type = 't';
 			break ;
 		case STT_LOOS:
 			sym->type = 'i';
 			break ;
 	}
-	if (read_uint32(sym->sym.st_value, opt) == 0 && sym->type != 'b'
-		&& read_uint32(sheader->sh_type, opt) != SHT_NOTE
+	if (read_unsigned_int(sym->sym.st_value, opt) == 0 && sym->type != 'b'
+		&& shndx_ok && read_uint32(sheader->sh_type, opt) != SHT_NOTE
 		&& read_uint32(sheader->sh_flags, opt) == 0)
 		sym->type = 'u';
-	if (shndx_ok && ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "data"))
+	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "data")
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".tm_clone_table")
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "preinit_array")))
 		sym->type = 'd';
-	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
-		|| ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".eh_frame")))
+	if (shndx_ok && (ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".rodata")
+		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".gnu.offload")
+		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".exit.data")))
 		sym->type = 'r';
+	if (shndx_ok && ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".eh_frame"))
+	{
+		if (read_uint32(sheader->sh_type, opt) == SHT_NOBITS)
+			sym->type = 'b';
+		else if (read_uint32(sheader->sh_type, opt) == SHT_PROGBITS
+			&& read_uint32(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_WRITE))
+			sym->type = 'd';
+		else
+			sym->type = 'r';
+	}
 	if (shndx_ok && sym->type != 'i'
 		&& (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".text")
 		|| ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init_array")
@@ -131,7 +140,12 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 	{
 		case STB_WEAK:
 			if (ELF32_ST_TYPE(sym->sym.st_info) == STT_OBJECT)
-				sym->type = 'V';
+			{
+				if (read_uint32(sym->sym.st_size, opt) == 0)
+					sym->type = 'v';
+				else
+					sym->type = 'V';
+			}
 			else if (ELF64_ST_TYPE(sym->sym.st_info) != STT_LOOS)
 			{
 				sym->type = 'w';
@@ -142,6 +156,9 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		case STB_GLOBAL:
 			if (sym->type != 'w' && sym->type != 'i')
 				sym->type = ft_toupper(sym->type);
+			break ;
+		case STB_LOOS:
+			sym->type = 'u';
 			break ;
 	}
 }
@@ -166,15 +183,14 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			shndx_ok = 1;
 		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
 		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
-		if (sym->type == 'C' && ft_strequ(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "initial_func_cfi"))
-			ft_printf("%0*x", padding, 0x90);
-		else if (sym->type == 'C' && ft_strequ(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "rootmenu"))
-			ft_printf("%0*x", padding, 0x60);
-		else if (sym->type == 'C' && ft_strequ(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "symbol_hash"))
-			ft_printf("%0*x", padding, 0x137a8);
+		if (sym->type == 'C')
+			ft_printf("%0*x", padding, read_uint32(sym->sym.st_size, opt));
+		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
+			ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, read_unsigned_int(sym->sym.st_value, opt));
 		else
 		{
-			if (sym->sym.st_shndx != 0)
+			if (read_uint16(sym->sym.st_shndx, opt) != 0)
 				ft_printf("%0*x", padding, read_uint32(sym->sym.st_value, opt));
 			else
 				ft_printf("%*s", padding, "");
@@ -238,6 +254,12 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 				case STB_HIPROC:
 					ft_printf(" HIPROC");
 					break ;
+				case STB_LOOS:
+					ft_printf(" LOOS");
+					break ;
+				case STB_HIOS:
+					ft_printf(" HIOS");
+					break ;
 			}
 			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym.st_info));
 			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym.st_other));
@@ -297,6 +319,46 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ft_printf("\n");
 		lst = lst->next;
 	}
+}
+
+static int	search_for_duplicates(t_dlist *lst, char *name)
+{
+	while (lst && lst->prev)
+		lst = lst->prev;
+	while (lst)
+	{
+		t_sym32 *sym = (t_sym32*)lst->content;
+		if (ft_strequ(sym->name, name))
+			return (1);
+		lst = lst->next;
+	}
+	return (0);
+}
+
+// Searching for symbol names in flto sections
+
+static int	search_for_lto_symbol_section(char *ptr, char *name, Elf32_Shdr *shstrhdr, int opt)
+{
+	char	*str;
+
+	if (!(str = ft_strjoin(".gnu.lto_", name)))
+		return (0);
+	Elf32_Ehdr *header = (Elf32_Ehdr*)ptr;
+	uint32_t	i = 0;
+	while (i < read_uint16(header->e_shnum, opt))
+	{
+		Elf32_Shdr *sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
+		+ (read_uint16(header->e_shentsize, opt) * i));
+		char *section_name =
+		ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
+		+ read_uint32(sheader->sh_name, opt);
+		// If the section name's contain our string then a '.',
+		// we found what we wanted
+		if (ft_strstr(section_name, str) && *(section_name + ft_strlen(str)) == '.')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
 void	handle_32(char *file, char *ptr, long int file_size, int opt)
@@ -474,19 +536,28 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					|| (opt & OPT_LTO &&
 						(read_uint16(elf_sym->st_shndx, opt) == SHN_COMMON
 						|| (read_uint16(header->e_type, opt) == ET_REL
-						&& ft_strequ("_GLOBAL_OFFSET_TABLE_", ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(elf_sym->st_name, opt)))
+						&& ft_strequ("_GLOBAL_OFFSET_TABLE_",
+						ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(elf_sym->st_name, opt)))
 						|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
 						&& read_unsigned_int(elf_sym->st_value, opt) == 0
-						&& ft_strequ(".text.unlikely", ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(shdr->sh_name, opt)))))
-					|| (elf_sym->st_info == 0 && read_unsigned_int(elf_sym->st_value, opt) == 0 && read_uint32(elf_sym->st_size, opt) == 0
-					&& elf_sym->st_name == 0 && read_uint16(elf_sym->st_shndx, opt) == 0))
+						&& ft_strequ(".text.unlikely", ptr
+						+ read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(shdr->sh_name, opt)))))
+					|| (elf_sym->st_info == 0 && read_unsigned_int(elf_sym->st_value, opt) == 0
+					&& read_uint32(elf_sym->st_size, opt) == 0
+					&& read_uint32(elf_sym->st_name, opt) == 0 && read_uint16(elf_sym->st_shndx, opt) == 0))
 				{
 					j++;
 					continue;
 				}
 				sym.sym = *elf_sym;
 				sym.type = 0;
-				sym.name = ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(elf_sym->st_name, opt);
+				sym.name = ptr + read_unsigned_int(shstr->sh_offset, opt)
+				+ read_uint32(elf_sym->st_name, opt);
+				if (opt & OPT_LTO && search_for_duplicates(lst, sym.name))
+				{
+					j++;
+					continue ;
+				}
 				if (opt & OPT_VERBOSE)
 				{
 					ft_printf("------------------------------------------------\n");
@@ -506,11 +577,73 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				j++;
 			}
 		}
+
+		// Specific case for files optimized with -flto
+		// Each symbol name is in the ".gnu.lto_symtab" section
+		// as raw data
 		if (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt), ".gnu.lto_.symtab"))
 		{
 			if (opt & OPT_VERBOSE)
 				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+			j = 0;
+			// Let's check the section for strings
+			char *str = ptr + read_unsigned_int(sheader->sh_offset, opt);
+			while (j < read_uint32(sheader->sh_size, opt))
+			{
+				if (ft_isprint(*(str + j)))
+				{
+					ft_bzero(&sym.sym.st_name, sizeof(Elf32_Sym)); 
+					sym.name = str + j;
+					// Eliminate strings with non printable characters
+					// and that already exist
+					uint32_t k = j;
+					int valid = 1;
+					while (*(str + k))
+					{
+						if (!ft_isprint(*(str + k)))
+						{
+							valid = 0;
+							break ;
+						}
+						k++;
+					}
+					if (valid == 0 || search_for_duplicates(lst, sym.name))
+					{
+						j += (uint32_t)ft_strlen(str + j);
+						continue ;
+					}
+					sym_count++;
+					// If a section named ".gnu.lto_{symbol_name}" exists,
+					// the symbol is of type T and has an adress of 00000000
+					if (search_for_lto_symbol_section(ptr, sym.name, shstrhdr, opt))
+					{
+						sym.sym.st_shndx = (Elf32_Section)i;
+						sym.type = 'T';
+					}
+					// Otherwise, it's an undefined symbol
+					else
+						sym.type = 'U';
+					if (opt & OPT_VERBOSE)
+					{
+						ft_printf("%s ", (str + j));
+					}
+					j += (uint32_t)ft_strlen(str + j);
+					if (!(new = ft_dlstnew(&sym, sizeof(sym))))
+					{
+						custom_error("ft_lstnew:");
+						ft_dlstdelfront(&lst, delsym);
+						return ;
+					}
+					if ((opt & OPT_C))
+						ft_dlstinsert(&lst, new, compare_names64);
+					else
+						ft_dlstinsert(&lst, new, compare_names64);
+				}
+				j++;
+			}
+			if (opt & OPT_VERBOSE)
+				ft_printf("\n");
 		}
 		/*if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
 		{

@@ -46,7 +46,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		ft_printf("\tOther = %d\n", sym->sym.st_other);
 		ft_printf("\tSection = %hu", read_uint16(sym->sym.st_shndx, opt));
 		if (shndx_ok)
-			ft_printf(" (%s)\n", ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
+			ft_printf(" (%s)\n", ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt)
+			+ read_uint32(sheader->sh_name, opt));
 		else
 		{
 			switch (read_uint16(sym->sym.st_shndx, opt))
@@ -77,7 +78,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			else
 				sym->type = 'r';
 		}
-		else	
+		else
 			sym->type = 'd';
 	}
 	else if (read_uint16(sym->sym.st_shndx, opt) == SHN_COMMON)
@@ -130,7 +131,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	if (shndx_ok && read_uint64(sheader->sh_flags, opt) == (SHF_MERGE | SHF_STRINGS))
 		sym->type = 'n';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "warning")
-		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))))
+		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))
+		|| (ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".ARM.attributes"))))
 		sym->type = 'n';
 	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug"))
 		sym->type = 'N';
@@ -138,7 +140,12 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	{
 		case STB_WEAK:
 			if (ELF64_ST_TYPE(sym->sym.st_info) == STT_OBJECT)
-				sym->type = 'V';
+			{
+				if (read_uint64(sym->sym.st_size, opt) == 0)
+					sym->type = 'v';
+				else
+					sym->type = 'V';
+			}
 			else if (ELF64_ST_TYPE(sym->sym.st_info) != STT_LOOS)
 			{
 				sym->type = 'w';
@@ -149,6 +156,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		case STB_GLOBAL:
 			if (sym->type != 'w' && sym->type != 'i')
 				sym->type = ft_toupper(sym->type);
+			break ;
+		case STB_LOOS:
+			sym->type = 'u';
 			break ;
 	}
 }
@@ -176,15 +186,6 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			shndx_ok = 1;
 		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
 		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
-	/*	if (sym->type == 'C'
-		&& ft_strequ(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "initial_func_cfi"))
-			ft_printf("%0*x", padding, 0x90);
-		else if (sym->type == 'C'
-			&& ft_strequ(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "rootmenu"))
-			ft_printf("%0*x", padding, 0x60);
-		else if (sym->type == 'C'
-			&& ft_strequ(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "symbol_hash"))
-			ft_printf("%0*x", padding, 0x137a8);*/
 		if (sym->type == 'C')
 			ft_printf("%0*x", padding, read_uint64(sym->sym.st_size, opt));
 		else if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
@@ -255,6 +256,12 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					break ;
 				case STB_HIPROC:
 					ft_printf(" HIPROC");
+					break ;
+				case STB_LOOS:
+					ft_printf(" LOOS");
+					break ;
+				case STB_HIOS:
+					ft_printf(" HIOS");
 					break ;
 			}
 			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym.st_info));
