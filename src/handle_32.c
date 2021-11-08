@@ -163,7 +163,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 	}
 }
 
-static void	print_symbols(t_dlist *lst, char *ptr, Elf32_Ehdr *header,
+static void	print_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *header,
 Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
 	t_sym32		*sym;
@@ -183,6 +183,8 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			shndx_ok = 1;
 		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
 		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
+		if (opt & OPT_O)
+			ft_printf("%s:", file);
 		if (sym->type == 'C')
 			ft_printf("%0*x", padding, read_uint32(sym->sym.st_size, opt));
 		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
@@ -674,7 +676,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	}
 	if (opt & OPT_PRINT_FILE_NAME)
 		ft_printf("\n%s:\n", file);
-	print_symbols(lst, ptr, header, shstr, shstrhdr, opt);
+	print_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
 	ft_dlstdelfront(&lst, delsym);
 	if (sym_count == 0)
 		custom_error("ft_nm: %s: no symbols\n", file);
