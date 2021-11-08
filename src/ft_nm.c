@@ -17,13 +17,8 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-int		map_file(char *file, int fd, t_stat stats, int opt)
+int		parse_file(char *ptr, char *file, t_stat stats, int opt)
 {
-	char				*ptr;
-
-	if ((ptr = (char *)mmap(0, (size_t)stats.st_size,
-		PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-		return (custom_error("ft_nm: mmap error"));
 	if (ptr[0] == ELFMAG0 && ptr[1] == ELFMAG1
 		&& ptr[2] == ELFMAG2 && ptr[3] == ELFMAG3)
 	{
@@ -31,7 +26,6 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 			opt |= OPT_BIG_ENDIAN;
 		else
 			opt |= OPT_LITTLE_ENDIAN;
-		//ft_printf("ELF binary\n");
 		if (ptr[4] == ELFCLASS64)
 		{
 			if (opt & OPT_VERBOSE)
@@ -51,40 +45,52 @@ int		map_file(char *file, int fd, t_stat stats, int opt)
 	}
 	else
 		return (custom_error("ft_nm: %s: File format not recognized\n", file));
+	return (0);
+}
+
+int		map_file(char *file, int fd, t_stat stats, int opt)
+{
+	char				*ptr;
+
+	if ((ptr = (char *)mmap(0, (size_t)stats.st_size,
+		PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+		return (custom_error("ft_nm: mmap error"));
+	parse_file(ptr, file, stats, opt);
 	if (munmap(ptr, (size_t)stats.st_size))
 		return (custom_error("ft_nm: munmap error"));
 	return (0);
 }
 
-int		analyze_file(char *file, int opt)
+int		analyze_file(int fd, char *file, int opt)
 {
-	int		fd;
 	t_stat	stats;
 
-	fd = 0;
-	if ((fd = open(file, O_RDONLY)) == -1)
-		return (custom_error("ft_nm: '%s': Open error\n", file));
 	if (fstat(fd, &stats))
 		return (custom_error("ft_nm: fstat error\n"));
+	if (S_ISDIR(stats.st_mode))
+		return (custom_error("ft_nm: Warning: '%s' is a directory\n", file));
+	else if (!S_ISREG(stats.st_mode))
+		return (custom_error("ft_nm: Warning: '%s' is not an ordinary file\n", file));
 	if (stats.st_size == 0)
-		return (custom_error(""));
+		return (custom_error("ft_nm: '%s' is empty\n", file));
 	if ((unsigned int)stats.st_size <= 3)
 		return (custom_error("ft_nm: %s: File truncated\n", file));
 	if (opt & OPT_VERBOSE)
 		ft_printf("File size = %d\n", stats.st_size);
-	if (S_ISDIR(stats.st_mode))
-	{
-		ft_printf("ft_nm: Warning: '%s' is a directory\n", file);
-		return (-1);
-	}
-	else if (!S_ISREG(stats.st_mode))
-	{
-		ft_printf("ft_nm: Warning: '%s' is not an ordinary file\n", file);
-		return (-1);
-	}
 	map_file(file, fd, stats, opt);
+	return (0);
+}
+
+int		open_file(char *file, int opt)
+{
+	int		fd;
+
+	fd = 0;
+	if ((fd = open(file, O_RDONLY)) == -1)
+		return (custom_error("ft_nm: '%s': Open error\n", file));
+	analyze_file(fd, file, opt);
 	if (close(fd))
-		return (custom_error("\n"));
+		return (custom_error("ft_nm: Close error\n"));
 	return (0);
 }
 
@@ -102,10 +108,10 @@ int		ft_nm(int ac, char **av)
 	while (i < ac)
 	{
 		if (!is_arg_an_option_line(av[i]))
-			analyze_file(av[i], opt);
+			open_file(av[i], opt);
 		i++;
 	}
 	if (nb_files == 0)
-		analyze_file("a.out", opt);
+		open_file("a.out", opt);
 	return (0);
 }

@@ -377,7 +377,13 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 	t_dlist		*lst;
 	t_dlist		*new;
 	t_sym64		sym;
+	char		*str;
 
+	lst = NULL;
+	new = NULL;
+	sym.name = NULL;
+	sym_count = 0;
+	shstr = NULL;
 	header = (Elf64_Ehdr*)ptr;
 	if (opt & OPT_VERBOSE)
 	{
@@ -420,17 +426,21 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		|| (long int)read_long_unsigned_int(header->e_phoff, opt)
 		+ read_uint16(header->e_phentsize, opt) * read_uint16(header->e_phnum, opt) > file_size)
 	{
-		custom_error("%s: file too short\n", file);
+		ft_printf("ft_nm: %s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
 	}
 	shstrhdr = (Elf64_Shdr*)(ptr + read_long_unsigned_int(header->e_shoff, opt)
 	+ (read_uint16(header->e_shentsize, opt) * read_uint16(header->e_shstrndx, opt)));
-	lst = NULL;
-	new = NULL;
-	sym.name = NULL;
-	sym_count = 0;
-	shstr = NULL;
+	if (read_uint32(shstrhdr->sh_type, opt) != SHT_NOBITS
+		&& (long int)read_long_unsigned_int(shstrhdr->sh_offset, opt)
+		+ (long int)read_uint64(shstrhdr->sh_size, opt) > file_size)
+	{
+		ft_printf("ft:nm: %s: file too short\n", file);
+		custom_error("ft_nm: %s: File format not recognized\n", file);
+		ft_dlstdelfront(&lst, delsym);
+		return ;
+	}
 	i = 0;
 	while (i < read_uint16(header->e_shnum, opt))
 	{
@@ -441,7 +451,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			&& (long int)read_long_unsigned_int(sheader->sh_offset, opt)
 			+ (long int)read_uint64(sheader->sh_size, opt) > file_size)
 		{
-			custom_error("%s: file too short\n", file);
+			ft_printf("ft:nm: %s: file too short\n", file);
 			custom_error("ft_nm: %s: File truncated\n", file);
 			ft_dlstdelfront(&lst, delsym);
 			return ;
@@ -590,7 +600,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
 			j = 0;
 			// Let's check the section for strings
-			char *str = ptr + read_long_unsigned_int(sheader->sh_offset, opt);
+			str = ptr + read_long_unsigned_int(sheader->sh_offset, opt);
 			while (j < read_uint64(sheader->sh_size, opt))
 			{
 				if (ft_isprint(*(str + j)))

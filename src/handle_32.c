@@ -375,6 +375,11 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	t_dlist		*new;
 	t_sym32		sym;
 
+	lst = NULL;
+	new = NULL;
+	sym.name = NULL;
+	sym_count = 0;
+	shstr = NULL;
 	header = (Elf32_Ehdr*) ptr;
 	if (opt & OPT_VERBOSE)
 	{
@@ -417,17 +422,21 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 		|| (long int)read_unsigned_int(header->e_phoff, opt)
 		+ read_uint16(header->e_phentsize, opt) * read_uint16(header->e_phnum, opt) > file_size)
 	{
-		custom_error("%s: file too short\n", file);
+		ft_printf("ft_nm: %s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
 	}
 	shstrhdr = (Elf32_Shdr*)(ptr + read_unsigned_int(header->e_shoff, opt)
 	+ (read_uint16(header->e_shentsize, opt) * read_uint16(header->e_shstrndx, opt)));
-	lst = NULL;
-	new = NULL;
-	sym.name = NULL;
-	sym_count = 0;
-	shstr = NULL;
+	if (read_uint32(shstrhdr->sh_type, opt) != SHT_NOBITS
+		&& (long int)read_unsigned_int(shstrhdr->sh_offset, opt)
+		+ (long int)read_uint32(shstrhdr->sh_size, opt) > file_size)
+	{
+		ft_printf("ft_nm: %s: file too short\n", file);
+		custom_error("ft_nm: %s: File truncated\n", file);
+		ft_dlstdelfront(&lst, delsym);
+		return ;
+	}
 	i = 0;
 	while (i < read_uint16(header->e_shnum, opt))
 	{
@@ -438,7 +447,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 			&& (long int)read_unsigned_int(sheader->sh_offset, opt)
 			+ (long int)read_uint32(sheader->sh_size, opt) > file_size)
 		{
-			custom_error("%s: file too short\n", file);
+			ft_printf("ft_nm: %s: file too short\n", file);
 			custom_error("ft_nm: %s: File truncated\n", file);
 			ft_dlstdelfront(&lst, delsym);
 			return ;
