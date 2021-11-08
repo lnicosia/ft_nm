@@ -22,5 +22,6 @@
 # define OPT_LTO (1 << 6)
 # define OPT_LITTLE_ENDIAN (1 << 7)
 # define OPT_BIG_ENDIAN (1 << 8)
+# define OPT_O (1 << 9)
 
 #endif

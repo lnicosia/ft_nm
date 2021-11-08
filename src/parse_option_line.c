@@ -25,6 +25,8 @@ int		check_opt(char *av, int *opt)
 		*opt |= OPT_P;
 	else if (*av == 's')
 		*opt |= OPT_S;
+	else if (*av == 'o')
+		*opt |= OPT_O;
 	return (0);
 }
 
