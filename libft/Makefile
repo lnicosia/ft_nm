@@ -71,9 +71,9 @@ endif
 
 CFLAGS = -Wall -Wextra -Werror -Wpadded -I $(INCLUDES_DIR) -I $(PRINTF_DIR) \
 			-Wno-unused-result -Wno-misleading-indentation \
-			-g3 \
+			$(OPTI_FLAGS) \
 			#-fsanitize=address 
-			#$(OPTI_FLAGS) \
+			#-g3 \
 
 # Color declarations
 RED := "\e[0;31m"

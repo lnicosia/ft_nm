@@ -132,6 +132,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		sym->type = 'n';
 	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "warning")
 		|| (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))
+		|| (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".note.GNU"))
 		|| (ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".ARM.attributes"))))
 		sym->type = 'n';
 	if (shndx_ok && ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug"))
@@ -564,6 +565,11 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				sym.type = 0;
 				sym.name = ptr + read_unsigned_int(shstr->sh_offset, opt)
 				+ read_uint32(elf_sym->st_name, opt);
+				if (opt & OPT_A && ELF32_ST_TYPE(elf_sym->st_info) == STT_SECTION)
+				{
+					sym.name = ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
+					+ read_uint32(shdr->sh_name, opt);
+				}
 				if (opt & OPT_LTO && search_for_duplicates(lst, sym.name))
 				{
 					j++;

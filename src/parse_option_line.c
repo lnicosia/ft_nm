@@ -17,15 +17,13 @@ int		check_opt(char *av, int *opt)
 {
 	if (*av == 'a')
 		*opt |= OPT_A;
-	else if (ft_strequ(av, "-verbose"))
-		*opt |= OPT_VERBOSE;
 	else if (*av == 'c')
 		*opt |= OPT_C;
 	else if (*av == 'p')
 		*opt |= OPT_P;
 	else if (*av == 's')
 		*opt |= OPT_S;
-	else if (*av == 'o')
+	else if (*av == 'o' || *av == 'A')
 		*opt |= OPT_O;
 	return (0);
 }
@@ -33,10 +31,15 @@ int		check_opt(char *av, int *opt)
 int		parse_option_line(char *av, int *opt)
 {
 	av++;
-	while (*av)
+	if (ft_strequ(av, "-verbose"))
+		*opt |= OPT_VERBOSE;
+	else
 	{
-		check_opt(av, opt);
-		av++;
+		while (*av)
+		{
+			check_opt(av, opt);
+			av++;
+		}
 	}
 	return (0);
 }

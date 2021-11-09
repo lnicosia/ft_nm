@@ -132,6 +132,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		sym->type = 'n';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "warning")
 		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))
+		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".note.GNU"))
 		|| (ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".ARM.attributes"))))
 		sym->type = 'n';
 	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug"))
@@ -544,7 +545,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				if (read_uint16(elf_sym->st_shndx, opt) < read_uint16(header->e_shnum, opt))
 					shdr = (Elf64_Shdr*)(ptr + read_long_unsigned_int(header->e_shoff, opt)
 					+ (read_uint16(header->e_shentsize, opt) * read_uint16(elf_sym->st_shndx, opt)));
-				if ((!shdr && read_uint16(elf_sym->st_shndx, opt) != SHN_ABS
+				if ((!(opt & OPT_A) && ((!shdr && read_uint16(elf_sym->st_shndx, opt) != SHN_ABS
 					&& read_uint16(elf_sym->st_shndx, opt) != SHN_COMMON) || elf_sym->st_info == STT_FILE
 					|| elf_sym->st_info == STT_SECTION
 					|| (shdr && read_uint64(shdr->sh_flags, opt) & SHF_MASKPROC)
@@ -556,7 +557,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 						|| (ELF64_ST_TYPE(elf_sym->st_info) == STT_FUNC && ELF64_ST_BIND(elf_sym->st_info) == STB_LOCAL
 						&& read_long_unsigned_int(elf_sym->st_value, opt) == 0
 						&& ft_strequ(".text.unlikely", ptr
-						+ read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(shdr->sh_name, opt)))))
+						+ read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(shdr->sh_name, opt)))))))
 					|| (elf_sym->st_info == 0 && read_long_unsigned_int(elf_sym->st_value, opt) == 0
 					&& read_uint64(elf_sym->st_size, opt) == 0
 					&& read_uint32(elf_sym->st_name, opt) == 0 && read_uint16(elf_sym->st_shndx, opt) == 0))
@@ -568,6 +569,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				sym.type = 0;
 				sym.name = ptr + read_long_unsigned_int(shstr->sh_offset, opt)
 				+ read_uint32(elf_sym->st_name, opt);
+				if (opt & OPT_A && ELF64_ST_TYPE(elf_sym->st_info) == STT_SECTION)
+				{
+					sym.name = ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt)
+					+ read_uint32(shdr->sh_name, opt);
+				}
 				if (opt & OPT_LTO && search_for_duplicates(lst, sym.name))
 				{
 					j++;
