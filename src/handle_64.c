@@ -94,8 +94,13 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		case STT_LOOS:
 			sym->type = 'i';
 			break ;
+		case STT_SECTION:
+			if (read_uint64(sheader->sh_flags, opt) == 0)
+				sym->type = 'n';
+			break ;
 	}
-	if (read_long_unsigned_int(sym->sym.st_value, opt) == 0 && sym->type != 'b'
+	if (read_long_unsigned_int(sym->sym.st_value, opt) == 0
+		&& sym->type != 'b' && sym->type != 'n'
 		&& shndx_ok && read_uint32(sheader->sh_type, opt) != SHT_NOTE
 		&& read_uint64(sheader->sh_flags, opt) == 0)
 		sym->type = 'u';
@@ -119,24 +124,30 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	}
 	if (shndx_ok && sym->type != 'i'
 		&& (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".text")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init_array")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".fini_array")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.rodata")
-		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init.data")))
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".init")
+		|| ft_strbegin(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".plt")
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "_freeres_fn")
+		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".note")
+			&& read_uint64(sheader->sh_flags, opt) & SHF_EXECINSTR)
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".fini")))
 		sym->type = 't';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "bss")))
 		sym->type = 'b';
-	if (!shndx_ok && read_uint16(sym->sym.st_shndx, opt) == SHN_ABS)
-		sym->type = 'a';
 	if (shndx_ok && read_uint64(sheader->sh_flags, opt) == (SHF_MERGE | SHF_STRINGS))
 		sym->type = 'n';
 	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), "warning")
-		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group"))
-		|| (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".note.GNU"))
-		|| (ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".ARM.attributes"))))
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".group")
+		|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".ARM.attributes")))
 		sym->type = 'n';
-	if (shndx_ok && ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug"))
+	if (shndx_ok && (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug")
+		|| ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".zdebug")))
 		sym->type = 'N';
+	if ((!shndx_ok && read_uint16(sym->sym.st_shndx, opt) == SHN_ABS)
+		|| (shndx_ok &&
+			(ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".shstrtab")
+			|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".strtab")
+			|| ft_strequ(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".symtab"))))
+		sym->type = 'a';
 	switch (ELF64_ST_BIND(sym->sym.st_info))
 	{
 		case STB_WEAK:
@@ -545,7 +556,8 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				if (read_uint16(elf_sym->st_shndx, opt) < read_uint16(header->e_shnum, opt))
 					shdr = (Elf64_Shdr*)(ptr + read_long_unsigned_int(header->e_shoff, opt)
 					+ (read_uint16(header->e_shentsize, opt) * read_uint16(elf_sym->st_shndx, opt)));
-				if ((!(opt & OPT_A) && ((!shdr && read_uint16(elf_sym->st_shndx, opt) != SHN_ABS
+				if ((!(opt & OPT_A && !(opt & OPT_LTO))
+					&& ((!shdr && read_uint16(elf_sym->st_shndx, opt) != SHN_ABS
 					&& read_uint16(elf_sym->st_shndx, opt) != SHN_COMMON) || elf_sym->st_info == STT_FILE
 					|| elf_sym->st_info == STT_SECTION
 					|| (shdr && read_uint64(shdr->sh_flags, opt) & SHF_MASKPROC)

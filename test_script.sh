@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT=-oa
+OPT=-a
 
 file=a.out
 echo "$file diff:"
@@ -20,8 +20,8 @@ for arg in $@
 do
 	file=$arg
 	echo "$file diff:"
-	./ft_nm $file > ft_nm.txt
-	nm $file > nm.txt
+	./ft_nm $file $OPT > ft_nm.txt
+	nm $file $OPT > nm.txt
 	diff ft_nm.txt nm.txt
 	#rm ft_nm.txt nm.txt
 done
