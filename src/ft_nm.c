@@ -102,6 +102,10 @@ int		ft_nm(int ac, char **av)
 
 	opt = 0;
 	nb_files = parse_nm_options(ac, av, &opt);
+	if (nb_files == -1)
+		return (-1);
+	else if (nb_files == -2)
+		return (0);
 	if (nb_files > 1 && !(opt & OPT_O))
 		opt |= OPT_PRINT_FILE_NAME;
 	i = 1;
