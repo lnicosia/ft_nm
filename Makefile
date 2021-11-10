@@ -38,7 +38,9 @@ LIB_RAW =
 
 SRC_RAW =	main.c ft_nm.c handle_64.c compare.c parse_option_line.c \
 			handle_32.c read_data.c print_64_bsd_symbols.c \
-			print_32_bsd_symbols.c
+			print_32_bsd_symbols.c print_64_sysv_symbols.c \
+			print_64_posix_symbols.c print_32_sysv_symbols.c \
+			print_32_posix_symbols.c
 
 HEADERS =	nm.h options.h read_data.h
 

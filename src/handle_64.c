@@ -555,6 +555,10 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		ft_printf("\n%s:\n", file);
 	if (opt & OPT_BSD)
 		print_64_bsd_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
+	else if (opt & OPT_SYSV)
+		print_64_sysv_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
+	else if (opt & OPT_POSIX)
+		print_64_posix_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
 	ft_dlstdelfront(&lst, delsym);
 	if (sym_count == 0)
 		custom_error("ft_nm: %s: no symbols\n", file);

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_64_bsd_symbols.c                             :+:      :+:    :+:   */
+/*   print_32_posix_symbols.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -16,47 +16,44 @@
 #include "read_data.h"
 #include <limits.h>
 
-void	print_64_bsd_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *header,
-Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
+void	print_32_posix_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *header,
+Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
-	t_sym64		*sym;
+	t_sym32		*sym;
 	int			shndx_ok;
 	int			padding;
 
 	(void)shstr;
-	if (opt & OPT_LTO)
-		padding = 8;
-	else
-		padding = 16;
+	padding = 8;
 	while (lst && lst->prev)
 		lst = lst->prev;
 	while (lst)
 	{
-		sym = (t_sym64*)lst->content;
-		if ((opt & OPT_D && read_uint16(sym->sym.st_shndx, opt) != 0))
-		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
-		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_WEAK))
+		sym = (t_sym32*)lst->content;
+		if ((opt & OPT_D
+			&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
+			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK))
 		{
 			lst = lst->next;
 			continue ;
 		}
-		if (read_uint16(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
+		if (read_uint32(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
 			shndx_ok = 0;
 		else
 			shndx_ok = 1;
-		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
+		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
 		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
 		if (opt & OPT_O)
 			ft_printf("%s:", file);
 		if (sym->type == 'C')
-			ft_printf("%0*x", padding, read_uint64(sym->sym.st_size, opt));
-		else if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
-			|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, read_long_unsigned_int(sym->sym.st_value, opt));
+			ft_printf("%0*x", padding, read_uint32(sym->sym.st_size, opt));
+		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
+			ft_printf("%0*x", padding / 2, read_unsigned_int(sym->sym.st_value, opt));
 		else
 		{
 			if (read_uint16(sym->sym.st_shndx, opt) != 0)
-				ft_printf("%0*x", padding, read_long_unsigned_int(sym->sym.st_value, opt));
+				ft_printf("%0*x", padding, read_uint32(sym->sym.st_value, opt));
 			else
 				ft_printf("%*s", padding, "");
 		}
@@ -78,7 +75,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		if (opt & OPT_VERBOSE)
 		{
 			ft_printf(" T =");
-			switch (ELF64_ST_TYPE(sym->sym.st_info))
+			switch (ELF32_ST_TYPE(sym->sym.st_info))
 			{
 				case STT_NOTYPE:
 					ft_printf(" NOTYPE");
@@ -111,9 +108,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					ft_printf(" HOS");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_TYPE(sym->sym.st_info));
+			ft_printf(" (%d)", ELF32_ST_TYPE(sym->sym.st_info));
 			ft_printf(", B =");
-			switch (ELF64_ST_BIND(sym->sym.st_info))
+			switch (ELF32_ST_BIND(sym->sym.st_info))
 			{
 				case STB_LOCAL:
 					ft_printf(" LOCAL");
@@ -137,14 +134,14 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 					ft_printf(" HIOS");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym.st_info));
-			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym.st_other));
-			ft_printf(", S = %d", read_uint64(sym->sym.st_size, opt));
+			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym.st_info));
+			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym.st_other));
+			ft_printf(", S = %d", read_uint32(sym->sym.st_size, opt));
 			ft_printf(", H = %d", read_uint16(sym->sym.st_shndx, opt));
 			if (shndx_ok)
 			{
-				ft_printf(" (%s",
-				ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
+				ft_printf(" (%s)",
+				ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
 				switch (read_uint32(sheader->sh_type, opt))
 				{
 					case SHT_NULL:
@@ -196,38 +193,38 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 						ft_printf(" (HIUSER))");
 						break ;
 				}
-				ft_printf(", flags =");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_WRITE)
+				ft_printf("flags =");
+				if (read_uint32(sheader->sh_flags, opt) & SHF_WRITE)
 					ft_printf(" WRITE");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_ALLOC)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_ALLOC)
 					ft_printf(" ALLOC");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_EXECINSTR)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_EXECINSTR)
 					ft_printf(" EXECINSTR");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKPROC)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_MASKPROC)
 					ft_printf(" MASKPROC");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_MERGE)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_MERGE)
 					ft_printf(" MERGE");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_STRINGS)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_STRINGS)
 					ft_printf(" STRINGS");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_INFO_LINK)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_INFO_LINK)
 					ft_printf(" INFO_LINK");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_LINK_ORDER)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_LINK_ORDER)
 					ft_printf(" LINK_ORDER");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_OS_NONCONFORMING)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_OS_NONCONFORMING)
 					ft_printf(" OS_NONCONFORMING");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_GROUP)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_GROUP)
 					ft_printf(" GROUP");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_TLS)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_TLS)
 					ft_printf(" TLS");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKOS)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_MASKOS)
 					ft_printf(" MASKOS");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_MIPS_MERGE)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_MIPS_MERGE)
 					ft_printf(" MIPS_MERGE");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_ORDERED)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_ORDERED)
 					ft_printf(" ORDERED");
-				if (read_uint64(sheader->sh_flags, opt) & SHF_EXCLUDE)
+				if (read_uint32(sheader->sh_flags, opt) & SHF_EXCLUDE)
 					ft_printf(" EXCLUDE");
-				ft_printf(" (%d)", read_uint64(sheader->sh_flags, opt));
+				ft_printf(" (%d)", read_uint32(sheader->sh_flags, opt));
 			}
 			else
 			{

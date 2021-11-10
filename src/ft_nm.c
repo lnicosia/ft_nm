@@ -101,8 +101,9 @@ int		ft_nm(int ac, char **av)
 	int	opt;
 
 	opt = 0;
-	opt |= OPT_BSD;
 	nb_files = parse_nm_options(ac, av, &opt);
+	if (!(opt & OPT_POSIX) && !(opt & OPT_SYSV))
+		opt |= OPT_BSD;
 	if (nb_files == -1)
 		return (-1);
 	else if (nb_files == -2)

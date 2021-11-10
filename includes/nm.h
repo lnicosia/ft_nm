@@ -59,5 +59,13 @@ void	print_64_bsd_symbols(t_dlist *lst, char *file, char *ptr,
 Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);
 void	print_32_bsd_symbols(t_dlist *lst, char *file, char *ptr,
 Elf32_Ehdr *header, Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt);
+void	print_64_sysv_symbols(t_dlist *lst, char *file, char *ptr,
+Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);
+void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr,
+Elf32_Ehdr *header, Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt);
+void	print_64_posix_symbols(t_dlist *lst, char *file, char *ptr,
+Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);
+void	print_32_posix_symbols(t_dlist *lst, char *file, char *ptr,
+Elf32_Ehdr *header, Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt);
 
 #endif

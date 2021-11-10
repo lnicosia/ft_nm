@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_64_bsd_symbols.c                             :+:      :+:    :+:   */
+/*   print_64_posix_symbols.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -16,7 +16,7 @@
 #include "read_data.h"
 #include <limits.h>
 
-void	print_64_bsd_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *header,
+void	print_64_posix_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *header,
 Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 {
 	t_sym64		*sym;
