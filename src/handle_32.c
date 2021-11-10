@@ -20,10 +20,10 @@
 **	Frees the content of a t_sym
 */
 
-static void			delsym(void *file, size_t size)
+static void			delsym(void *sym, size_t size)
 {
 	(void)size;
-	(void)file;
+	ft_strdel(&((t_sym32*)sym)->name);
 }
 
 static void	set_symbol_type(t_sym32 *sym, char *ptr, Elf32_Ehdr *header,
@@ -172,166 +172,6 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		case STB_LOOS:
 			sym->type = 'u';
 			break ;
-	}
-}
-
-static void	print_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *header,
-Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
-{
-	t_sym32		*sym;
-	int			shndx_ok;
-	int			padding;
-
-	(void)shstr;
-	padding = 8;
-	while (lst && lst->prev)
-		lst = lst->prev;
-	while (lst)
-	{
-		sym = (t_sym32*)lst->content;
-		if (read_uint32(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
-			shndx_ok = 0;
-		else
-			shndx_ok = 1;
-		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
-		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
-		if (opt & OPT_O)
-			ft_printf("%s:", file);
-		if (sym->type == 'C')
-			ft_printf("%0*x", padding, read_uint32(sym->sym.st_size, opt));
-		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
-			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%0*x", padding / 2, read_unsigned_int(sym->sym.st_value, opt));
-		else
-		{
-			if (read_uint16(sym->sym.st_shndx, opt) != 0)
-				ft_printf("%0*x", padding, read_uint32(sym->sym.st_value, opt));
-			else
-				ft_printf("%*s", padding, "");
-		}
-		if (opt & OPT_VERBOSE)
-			ft_printf(" %3d", sym->sym.st_info);
-		ft_printf(" %c", sym->type);
-		ft_printf(" %s", sym->name);
-		if (opt & OPT_VERBOSE)
-		{
-			ft_printf(" T =");
-			switch (ELF32_ST_TYPE(sym->sym.st_info))
-			{
-				case STT_NOTYPE:
-					ft_printf(" NOTYPE");
-					break ;
-				case STT_OBJECT:
-					ft_printf(" OBJECT");
-					break ;
-				case STT_FUNC:
-					ft_printf(" FUNC");
-					break ;
-				case STT_SECTION:
-					ft_printf(" SECTION");
-					break ;
-				case STT_FILE:
-					ft_printf(" FILE");
-					break ;
-				case STT_LOPROC:
-					ft_printf(" LOPROC");
-					break ;
-				case STT_HIPROC:
-					ft_printf(" HIPROC");
-					break ;
-				case STT_COMMON:
-					ft_printf(" COMMON");
-					break ;
-				case STT_LOOS:
-					ft_printf(" LOOS");
-					break ;
-				case STT_HIOS:
-					ft_printf(" HOS");
-					break ;
-			}
-			ft_printf(" (%d)", ELF32_ST_TYPE(sym->sym.st_info));
-			ft_printf(", B =");
-			switch (ELF32_ST_BIND(sym->sym.st_info))
-			{
-				case STB_LOCAL:
-					ft_printf(" LOCAL");
-					break ;
-				case STB_GLOBAL:
-					ft_printf(" GLOBAL");
-					break ;
-				case STB_WEAK:
-					ft_printf(" WEAK");
-					break ;
-				case STB_LOPROC:
-					ft_printf(" LOPROC");
-					break ;
-				case STB_HIPROC:
-					ft_printf(" HIPROC");
-					break ;
-				case STB_LOOS:
-					ft_printf(" LOOS");
-					break ;
-				case STB_HIOS:
-					ft_printf(" HIOS");
-					break ;
-			}
-			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym.st_info));
-			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym.st_other));
-			ft_printf(", S = %d", read_uint32(sym->sym.st_size, opt));
-			ft_printf(", H = %d", read_uint16(sym->sym.st_shndx, opt));
-			if (shndx_ok)
-			{
-				ft_printf(" (%s), flags =", ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
-				if (read_uint32(sheader->sh_flags, opt) & SHF_WRITE)
-					ft_printf(" WRITE");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_ALLOC)
-					ft_printf(" ALLOC");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_EXECINSTR)
-					ft_printf(" EXECINSTR");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_MASKPROC)
-					ft_printf(" MASKPROC");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_MERGE)
-					ft_printf(" MERGE");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_STRINGS)
-					ft_printf(" STRINGS");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_INFO_LINK)
-					ft_printf(" INFO_LINK");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_LINK_ORDER)
-					ft_printf(" LINK_ORDER");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_OS_NONCONFORMING)
-					ft_printf(" OS_NONCONFORMING");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_GROUP)
-					ft_printf(" GROUP");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_TLS)
-					ft_printf(" TLS");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_MASKOS)
-					ft_printf(" MASKOS");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_MIPS_MERGE)
-					ft_printf(" MIPS_MERGE");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_ORDERED)
-					ft_printf(" ORDERED");
-				if (read_uint32(sheader->sh_flags, opt) & SHF_EXCLUDE)
-					ft_printf(" EXCLUDE");
-				ft_printf(" (%d)", read_uint32(sheader->sh_flags, opt));
-			}
-			else
-			{
-				switch (read_uint16(sym->sym.st_shndx, opt))
-				{
-					case SHN_UNDEF:
-					ft_printf(" (UNDEF)");
-						break ;
-					case SHN_ABS:
-						ft_printf(" (ABS)");
-						break ;
-					case SHN_COMMON:
-						ft_printf(" (COMMON)");
-						break ;
-				}
-			}
-		}
-		ft_printf("\n");
-		lst = lst->next;
 	}
 }
 
@@ -582,6 +422,19 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					sym.name = ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
 					+ read_uint32(shdr->sh_name, opt);
 				}
+				size_t k = 0;
+				if (opt & OPT_D)
+				{
+					while (sym.name[k] && sym.name[k] != '@')
+						k++;
+				}
+				else
+					k = ft_strlen(sym.name);
+				if (!(sym.name = ft_strsub(sym.name, 0, k)))
+				{
+					ft_dlstdelfront(&lst, delsym);
+					return ;
+				}
 				if (opt & OPT_LTO && search_for_duplicates(lst, sym.name))
 				{
 					j++;
@@ -623,7 +476,10 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				if (ft_isprint(*(str + j)))
 				{
 					ft_bzero(&sym.sym.st_name, sizeof(Elf32_Sym)); 
-					sym.name = str + j;
+					if (!(sym.name = ft_strdup(str + j)))
+					{
+						ft_dlstdelfront(&lst, delsym);
+					}
 					// Eliminate strings with non printable characters
 					// and that already exist
 					uint32_t k = j;
@@ -694,7 +550,8 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	}
 	if (opt & OPT_PRINT_FILE_NAME)
 		ft_printf("\n%s:\n", file);
-	print_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
+	if (opt & OPT_BSD)
+		print_32_bsd_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
 	ft_dlstdelfront(&lst, delsym);
 	if (sym_count == 0)
 		custom_error("ft_nm: %s: no symbols\n", file);

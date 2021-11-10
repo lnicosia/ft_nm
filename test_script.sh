@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT=-a
+OPT=-Do
 
 file=a.out
 echo "$file diff:"
