@@ -59,7 +59,7 @@ int		compare_addresses32(void *s1, void *s2)
 		return (1);
 	if (value1 == value2)
 		return (compare_names32(s1, s2));
-	return ((int)(value1 - value2));
+	return (value1 > value2);
 }
 
 int		compare_addresses64(void *s1, void *s2)
@@ -74,7 +74,7 @@ int		compare_addresses64(void *s1, void *s2)
 		return (1);
 	if (value1 == value2)
 		return (compare_names64(s1, s2));
-	return ((int)(value1 - value2));
+	return (value1 > value2);
 }
 
 int		rno_sort(void *s1, void *s2)
@@ -107,7 +107,7 @@ int		rcompare_addresses32(void *s1, void *s2)
 		return (0);
 	if (value1 == value2)
 		return (rcompare_names32(s1, s2));
-	return ((int)(value2 - value1));
+	return (value2 > value1);
 }
 
 int		rcompare_addresses64(void *s1, void *s2)
@@ -122,7 +122,7 @@ int		rcompare_addresses64(void *s1, void *s2)
 		return (0);
 	if (value1 == value2)
 		return (rcompare_names64(s1, s2));
-	return ((int)(value2 - value1));
+	return (value2 > value1);
 }
 
 /*

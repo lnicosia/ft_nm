@@ -58,6 +58,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			else
 				ft_printf("%*s", padding, "");
 		}
+		if (opt & OPT_S && read_uint64(sym->sym.st_size, opt) != 0)
+			ft_printf(" %*0x", padding, read_uint64(sym->sym.st_size, opt));
 		if (opt & OPT_VERBOSE)
 			ft_printf(" %3d", sym->sym.st_info);
 		ft_printf(" %c", sym->type);
