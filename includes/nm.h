@@ -54,6 +54,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt);
 int		parse_option_line(char *av, int *opt);
 
 int 	(*set_compare_func(int type, int opt))(void *, void *);
+int		no_sort(void *s1, void *s2);
 int		compare_names32(void *s1, void *s2);
 int		compare_names64(void *s1, void *s2);
 int		compare_addresses32(void *s1, void *s2);

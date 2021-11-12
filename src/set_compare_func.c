@@ -15,6 +15,8 @@
 
 int	(*set_compare_func(int type, int opt))(void *s1, void *s2)
 {
+	if (opt & OPT_P)
+		return (no_sort);
 	if (opt & OPT_N)
 	{
 		if (type == 64)

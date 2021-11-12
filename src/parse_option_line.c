@@ -87,10 +87,12 @@ int		check_opt(char *av, int *opt)
 {
 	if (*av == 'a')
 		*opt |= OPT_A;
-	else if (*av == 'c')
-		*opt |= OPT_C;
 	else if (*av == 'p')
+	{
 		*opt |= OPT_P;
+		*opt &= ~OPT_N;
+		*opt &= ~OPT_SIZE_SORT;
+	}
 	else if (*av == 'S')
 		*opt |= OPT_S;
 	else if (*av == 'u')
@@ -98,9 +100,17 @@ int		check_opt(char *av, int *opt)
 	else if (*av == 'D')
 		*opt |= OPT_D;
 	else if (*av == 'n')
+	{
 		*opt |= OPT_N;
+		*opt &= ~OPT_P;
+		*opt &= ~OPT_SIZE_SORT;
+	}
 	else if (*av == 'v')
+	{
 		*opt |= OPT_N;
+		*opt &= ~OPT_P;
+		*opt &= ~OPT_SIZE_SORT;
+	}
 	else if (*av == 'B')
 		*opt |= OPT_BSD;
 	else if (*av == 'P')
@@ -155,7 +165,11 @@ int		parse_option_line(char *av, int *opt)
 		else if (ft_strnequ(av, "--print-size", ft_strlen(av)))
 			*opt |= OPT_S;
 		else if (ft_strnequ(av, "--size-sort", ft_strlen(av)))
+		{
 			*opt |= OPT_SIZE_SORT;
+			*opt &= ~OPT_N;
+			*opt &= ~OPT_P;
+		}
 		else if (ft_strnequ(av, "--undefined-only", ft_strlen(av)))
 			*opt |= OPT_U;
 		else if (ft_strnequ(av, "--help", ft_strlen(av)))

@@ -29,6 +29,13 @@ char		ignore_char(char c)
 **	to go through our dlist
 */
 
+int		no_sort(void *s1, void *s2)
+{
+	(void)s1;
+	(void)s2;
+	return (0);
+}
+
 int		compare_names32(void *s1, void *s2)
 {
 	return (ft_strcmp(((t_sym32*)s1)->name, ((t_sym32*)s2)->name));
