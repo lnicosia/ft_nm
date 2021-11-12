@@ -113,7 +113,10 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 				type = " TLS";
 				break ;
 		}
-		ft_printf("|%18s|", type);
+		if (ELF32_ST_TYPE(sym->sym.st_info) != STT_SECTION)
+			ft_printf("|%18s|", type);
+		else
+			ft_printf("|%18s|", "");
 		if (read_uint32(sym->sym.st_size, opt))
 			ft_printf("%0*x|", padding, read_uint32(sym->sym.st_size, opt));
 		else
@@ -121,8 +124,10 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 		ft_printf("     |");
 		if (shndx_ok && !(opt & OPT_LTO))
 		{
-			ft_printf("%s",
-			ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
+			if (ELF32_ST_TYPE(sym->sym.st_info) != STT_SECTION)
+				ft_printf("%s", ptr
+				+ read_unsigned_int(shstrhdr->sh_offset, opt)
+				+ read_uint32(sheader->sh_name, opt));
 		}
 		else if (!(opt & OPT_LTO))
 		{
