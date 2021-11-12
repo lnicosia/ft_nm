@@ -53,6 +53,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt);
 void	handle_32(char *file, char *ptr, long int file_size, int opt);
 int		parse_option_line(char *av, int *opt);
 
+//		Comparison functions used to sort symbols
 int 	(*set_compare_func(int type, int opt))(void *, void *);
 int		no_sort(void *s1, void *s2);
 int		compare_names32(void *s1, void *s2);
@@ -60,6 +61,17 @@ int		compare_names64(void *s1, void *s2);
 int		compare_addresses32(void *s1, void *s2);
 int		compare_addresses64(void *s1, void *s2);
 int		compare_names_no_special(void *s1, void *s2);
+
+//		Reverse comparison function (-r)
+//		We need need versions because it's not
+//		exactly a reverse (addresses are still sorted
+//		ascending)
+int		rno_sort(void *s1, void *s2);
+int		rcompare_names32(void *s1, void *s2);
+int		rcompare_names64(void *s1, void *s2);
+int		rcompare_addresses32(void *s1, void *s2);
+int		rcompare_addresses64(void *s1, void *s2);
+int		rcompare_names_no_special(void *s1, void *s2);
 
 void	print_64_bsd_symbols(t_dlist *lst, char *file, char *ptr,
 Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);

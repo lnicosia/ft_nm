@@ -59,7 +59,7 @@ int		compare_addresses32(void *s1, void *s2)
 		return (1);
 	if (value1 == value2)
 		return (compare_names32(s1, s2));
-	return (value1 > value2);
+	return ((int)(value1 - value2));
 }
 
 int		compare_addresses64(void *s1, void *s2)
@@ -74,7 +74,55 @@ int		compare_addresses64(void *s1, void *s2)
 		return (1);
 	if (value1 == value2)
 		return (compare_names64(s1, s2));
-	return (value1 > value2);
+	return ((int)(value1 - value2));
+}
+
+int		rno_sort(void *s1, void *s2)
+{
+	(void)s1;
+	(void)s2;
+	return (-1);
+}
+
+int		rcompare_names32(void *s1, void *s2)
+{
+	return (ft_strcmp(((t_sym32*)s2)->name, ((t_sym32*)s1)->name));
+}
+
+int		rcompare_names64(void *s1, void *s2)
+{
+	return (ft_strcmp(((t_sym64*)s2)->name, ((t_sym64*)s1)->name));
+}
+
+
+int		rcompare_addresses32(void *s1, void *s2)
+{
+	t_sym32	*sym1 = (t_sym32*)s1;
+	t_sym32	*sym2 = (t_sym32*)s2;
+	uint32_t value1 = sym1->sym.st_value;
+	uint32_t value2 = sym2->sym.st_value;
+	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
+		return (0);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (1);
+	if (value1 == value2)
+		return (compare_names32(s1, s2));
+	return ((int)(value2 - value1));
+}
+
+int		rcompare_addresses64(void *s1, void *s2)
+{
+	t_sym64	*sym1 = (t_sym64*)s1;
+	t_sym64	*sym2 = (t_sym64*)s2;
+	uint64_t value1 = sym1->sym.st_value;
+	uint64_t value2 = sym2->sym.st_value;
+	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
+		return (0);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (1);
+	if (value1 == value2)
+		return (compare_names64(s1, s2));
+	return ((int)(value2 - value1));
 }
 
 /*

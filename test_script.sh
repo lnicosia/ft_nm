@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT="-pppppppvvvvp"
+OPT="-arovpn --format=posix"
 
 file=a.out
 echo "$file diff:"

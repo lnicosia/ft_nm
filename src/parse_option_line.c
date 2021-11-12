@@ -99,6 +99,8 @@ int		check_opt(char *av, int *opt)
 		*opt |= OPT_U;
 	else if (*av == 'D')
 		*opt |= OPT_D;
+	else if (*av == 'r')
+		*opt |= OPT_R;
 	else if (*av == 'n')
 	{
 		*opt |= OPT_N;

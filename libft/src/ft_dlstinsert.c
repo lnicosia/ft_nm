@@ -219,7 +219,7 @@ int (*compare)(void *, void *))
 		/*ft_printf("Comparison between |%s| and |%s| = %d\n",
 		((t_file*)(*lst)->content)->name,
 		((t_file*)new->content)->name, compare((*lst)->content, new->content));*/
-		if (compare((*lst)->content, new->content) <= 0)
+		if (compare((*lst)->content, new->content) > 0)
 		{
 			//ft_printf("Add right\n");
 			ft_dlstaddright(lst, new);
