@@ -102,11 +102,11 @@ int		rcompare_addresses32(void *s1, void *s2)
 	uint32_t value1 = sym1->sym.st_value;
 	uint32_t value2 = sym2->sym.st_value;
 	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
-		return (0);
-	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
 		return (1);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (0);
 	if (value1 == value2)
-		return (compare_names32(s1, s2));
+		return (rcompare_names32(s1, s2));
 	return ((int)(value2 - value1));
 }
 
@@ -117,11 +117,11 @@ int		rcompare_addresses64(void *s1, void *s2)
 	uint64_t value1 = sym1->sym.st_value;
 	uint64_t value2 = sym2->sym.st_value;
 	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
-		return (0);
-	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
 		return (1);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (0);
 	if (value1 == value2)
-		return (compare_names64(s1, s2));
+		return (rcompare_names64(s1, s2));
 	return ((int)(value2 - value1));
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT="-arovpn --format=posix"
+OPT="-arovpn --format=sysv"
 
 file=a.out
 echo "$file diff:"
