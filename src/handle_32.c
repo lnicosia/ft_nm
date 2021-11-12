@@ -228,6 +228,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	t_dlist		*lst;
 	t_dlist		*new;
 	t_sym32		sym;
+	int			(*compare)(void *, void *);
 
 	lst = NULL;
 	new = NULL;
@@ -235,6 +236,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	sym_count = 0;
 	shstr = NULL;
 	header = (Elf32_Ehdr*) ptr;
+	compare = set_compare_func(32, opt);
 	if (opt & OPT_VERBOSE)
 	{
 		switch (read_uint16(header->e_type, opt))
@@ -417,6 +419,8 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				sym.type = 0;
 				sym.name = ptr + read_unsigned_int(shstr->sh_offset, opt)
 				+ read_uint32(elf_sym->st_name, opt);
+				sym.sym.st_value = read_uint32(elf_sym->st_value, opt);
+				sym.sym.st_shndx = read_uint16(elf_sym->st_shndx, opt);
 				if (opt & OPT_A && ELF32_ST_TYPE(elf_sym->st_info) == STT_SECTION)
 				{
 					sym.name = ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
@@ -446,16 +450,15 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					ft_printf("\t\tSymbol %d\n", j);
 				}
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
+				if (sym.type == 'C')
+					sym.sym.st_value = read_uint32(sym.sym.st_size, opt);
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
 				{
 					custom_error("ft_lstnew:");
 					ft_dlstdelfront(&lst, delsym);
 					return ;
 				}
-				if ((opt & OPT_C))
-					ft_dlstinsert(&lst, new, compare_names32);
-				else
-					ft_dlstinsert(&lst, new, compare_names32);
+				ft_dlstinsert(&lst, new, compare);
 				j++;
 			}
 		}
@@ -508,7 +511,9 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 					}
 					// Otherwise, it's an undefined symbol
 					else
+					{
 						sym.type = 'U';
+					}
 					if (opt & OPT_VERBOSE)
 					{
 						ft_printf("%s ", (str + j));
@@ -520,32 +525,13 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 						ft_dlstdelfront(&lst, delsym);
 						return ;
 					}
-					if ((opt & OPT_C))
-						ft_dlstinsert(&lst, new, compare_names32);
-					else
-						ft_dlstinsert(&lst, new, compare_names32);
+					ft_dlstinsert(&lst, new, compare);
 				}
 				j++;
 			}
 			if (opt & OPT_VERBOSE)
 				ft_printf("\n");
 		}
-		/*if (opt & OPT_VERBOSE && sheader->sh_type == SHT_STRTAB)
-		{
-			ft_printf("{cyan}String table{reset}\n");
-			//ft_printf("String section has %d entries\n", sheader->sh_size / sheader->sh_entsize);
-			char *str = (char*)(ptr + sheader->sh_offset);
-			j = 0;
-			while (j < sheader->sh_size)
-			{
-				if (str[j])
-					ft_printf("%c", str[j]);
-				else
-					ft_printf(" ");
-				j++;
-			}
-			ft_printf("\n");
-		}*/
 		i++;
 	}
 	if (opt & OPT_PRINT_FILE_NAME)

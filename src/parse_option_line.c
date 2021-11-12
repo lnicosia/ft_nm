@@ -34,7 +34,7 @@ int		print_usage_stdin(void)
 	ft_printf("  -e\t\t\t(ignored)\n");
 	ft_printf("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	ft_printf("\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
-	ft_printf("  -n, --numeric-sort\tSort symbols numerically by adress\n");
+	ft_printf("  -n, --numeric-sort\tSort symbols numerically by address\n");
 	ft_printf("  -o\t\t\tSame as -A\n");
 	ft_printf("  -p, --no-sort\t\tDo no sort the symbols\n");
 	ft_printf("  -P, --portability\tSame as --format=posix\n");
@@ -65,7 +65,7 @@ int		print_usage(void)
 	custom_error("  -e\t\t\t(ignored)\n");
 	custom_error("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	custom_error("\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
-	custom_error("  -n, --numeric-sort\tSort symbols numerically by adress\n");
+	custom_error("  -n, --numeric-sort\tSort symbols numerically by address\n");
 	custom_error("  -o\t\t\tSame as -A\n");
 	custom_error("  -p, --no-sort\t\tDo no sort the symbols\n");
 	custom_error("  -P, --portability\tSame as --format=posix\n");

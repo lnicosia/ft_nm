@@ -39,6 +39,37 @@ int		compare_names64(void *s1, void *s2)
 	return (ft_strcmp(((t_sym64*)s1)->name, ((t_sym64*)s2)->name));
 }
 
+
+int		compare_addresses32(void *s1, void *s2)
+{
+	t_sym32	*sym1 = (t_sym32*)s1;
+	t_sym32	*sym2 = (t_sym32*)s2;
+	uint32_t value1 = sym1->sym.st_value;
+	uint32_t value2 = sym2->sym.st_value;
+	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
+		return (0);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (1);
+	if (value1 == value2)
+		return (compare_names32(s1, s2));
+	return (value1 > value2);
+}
+
+int		compare_addresses64(void *s1, void *s2)
+{
+	t_sym64	*sym1 = (t_sym64*)s1;
+	t_sym64	*sym2 = (t_sym64*)s2;
+	uint64_t value1 = sym1->sym.st_value;
+	uint64_t value2 = sym2->sym.st_value;
+	if (sym1->sym.st_shndx == 0 && sym2->sym.st_shndx != 0)
+		return (0);
+	if (sym2->sym.st_shndx == 0 && sym1->sym.st_shndx != 0)
+		return (1);
+	if (value1 == value2)
+		return (compare_names64(s1, s2));
+	return (value1 > value2);
+}
+
 /*
 **	Function comparing the two file names that is going to be used
 **	to go through our dlist

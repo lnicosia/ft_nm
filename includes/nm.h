@@ -52,9 +52,14 @@ int		is_arg_an_option_line(char *av);
 void	handle_64(char *file, char *ptr, long int file_size, int opt);
 void	handle_32(char *file, char *ptr, long int file_size, int opt);
 int		parse_option_line(char *av, int *opt);
+
+int 	(*set_compare_func(int type, int opt))(void *, void *);
 int		compare_names32(void *s1, void *s2);
 int		compare_names64(void *s1, void *s2);
+int		compare_addresses32(void *s1, void *s2);
+int		compare_addresses64(void *s1, void *s2);
 int		compare_names_no_special(void *s1, void *s2);
+
 void	print_64_bsd_symbols(t_dlist *lst, char *file, char *ptr,
 Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);
 void	print_32_bsd_symbols(t_dlist *lst, char *file, char *ptr,

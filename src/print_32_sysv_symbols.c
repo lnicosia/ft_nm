@@ -62,9 +62,7 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 		}
 		else
 			ft_printf("%-20s", sym->name);
-		if (sym->type == 'C')
-			ft_printf("|%0*x|", padding, read_uint32(sym->sym.st_size, opt));
-		else if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 				|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
 			ft_printf("|%0*x|", padding / 2, read_long_unsigned_int(sym->sym.st_value, opt));
 		else

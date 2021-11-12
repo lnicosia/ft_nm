@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT="--format=posix -oa"
+OPT="-n -ov -a"
 
 file=a.out
 echo "$file diff:"

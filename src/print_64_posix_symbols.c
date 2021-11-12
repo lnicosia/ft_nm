@@ -56,9 +56,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		else
 			ft_printf("%s", sym->name);
 		ft_printf(" %c", sym->type);
-		if (sym->type == 'C')
-			ft_printf(" %0*x", padding, read_uint64(sym->sym.st_size, opt));
-		else if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+		if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 			|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
 			ft_printf(" %*x%0*x", padding / 2, 0xffffffff, padding / 2, read_long_unsigned_int(sym->sym.st_value, opt));
 		else
