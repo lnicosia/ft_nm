@@ -31,12 +31,12 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 {
 	int			shndx_ok;
 
-	if (read_uint16(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
+	if (sym->sym.st_shndx >= read_uint16(header->e_shnum, opt))
 		shndx_ok = 0;
 	else
 		shndx_ok = 1;
 	Elf32_Shdr *sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
-		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
+		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 	if (opt & OPT_VERBOSE)
 	{
 		ft_printf("------------------------------------------------\n");
@@ -44,13 +44,13 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt));
 		ft_printf("\tInfo = %d\n", sym->sym.st_info);
 		ft_printf("\tOther = %d\n", sym->sym.st_other);
-		ft_printf("\tSection = %hu", read_uint16(sym->sym.st_shndx, opt));
+		ft_printf("\tSection = %hu", sym->sym.st_shndx);
 		if (shndx_ok)
 			ft_printf(" (%s)\n", ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt));
 		else
 		{
-			switch (read_uint16(sym->sym.st_shndx, opt))
+			switch (sym->sym.st_shndx)
 			{
 				case SHN_UNDEF:
 					ft_printf(" (UNDEF)\n");
@@ -63,7 +63,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 					break ;
 			}
 		}
-		ft_printf("\tValue = %016x\n", read_uint32(sym->sym.st_value, opt));
+		ft_printf("\tValue = %016x\n", sym->sym.st_value);
 		ft_printf("\tSize = %lu\n", read_uint32(sym->sym.st_size, opt));
 	}
 	if (shndx_ok)
@@ -81,12 +81,12 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		else
 			sym->type = 'd';
 	}
-	else if (read_uint16(sym->sym.st_shndx, opt) == SHN_COMMON)
+	else if (sym->sym.st_shndx == SHN_COMMON)
 			sym->type = 'c';
 	switch (ELF32_ST_TYPE(sym->sym.st_info))
 	{
 		case STT_FUNC:
-			if (read_uint16(sym->sym.st_shndx, opt) == 0)
+			if (sym->sym.st_shndx == 0)
 				sym->type = 'u';
 			else
 				sym->type = 't';
@@ -99,7 +99,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 				sym->type = 'n';
 			break ;
 	}
-	if (read_unsigned_int(sym->sym.st_value, opt) == 0
+	if (sym->sym.st_value == 0
 		&& sym->type != 'b' && sym->type != 'n'
 		&& shndx_ok && read_uint32(sheader->sh_type, opt) != SHT_NOTE
 		&& read_uint32(sheader->sh_flags, opt) == 0)
@@ -142,7 +142,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 	if (shndx_ok && (ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".debug")
 		|| ft_strstr(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".zdebug")))
 		sym->type = 'N';
-	if ((!shndx_ok && read_uint16(sym->sym.st_shndx, opt) == SHN_ABS)
+	if ((!shndx_ok && sym->sym.st_shndx == SHN_ABS)
 		|| (shndx_ok &&
 			(ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".shstrtab")
 			|| ft_strequ(ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt), ".strtab")
@@ -419,7 +419,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				sym.type = 0;
 				sym.name = ptr + read_unsigned_int(shstr->sh_offset, opt)
 				+ read_uint32(elf_sym->st_name, opt);
-				sym.sym.st_value = read_uint32(elf_sym->st_value, opt);
+				sym.sym.st_value = read_unsigned_int(elf_sym->st_value, opt);
 				sym.sym.st_shndx = read_uint16(elf_sym->st_shndx, opt);
 				if (opt & OPT_A && ELF32_ST_TYPE(elf_sym->st_info) == STT_SECTION)
 				{

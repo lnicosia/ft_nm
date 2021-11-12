@@ -55,17 +55,17 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ft_printf(" %c", sym->type);
 		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf(" %0*x", padding / 2, read_unsigned_int(sym->sym.st_value, opt));
+			ft_printf(" %0*x", padding / 2, sym->sym.st_value);
 		else
 		{
-			if (read_uint16(sym->sym.st_shndx, opt) != 0)
-				ft_printf(" %0*x", padding, read_unsigned_int(sym->sym.st_value, opt));
+			if (sym->sym.st_shndx != 0)
+				ft_printf(" %0*x", padding, sym->sym.st_value);
 			else
 				ft_printf(" %8s", "");
 		}
-		if (read_uint32(sym->sym.st_size, opt) && read_uint16(sym->sym.st_shndx, opt) != 0)
+		if (read_uint32(sym->sym.st_size, opt) && sym->sym.st_shndx != 0)
 			ft_printf(" %0*x", padding, read_uint32(sym->sym.st_size, opt));
-		else if (read_uint16(sym->sym.st_shndx, opt) != 0)
+		else if (sym->sym.st_shndx != 0)
 			ft_printf(" ");
 		ft_printf("\n");
 		lst = lst->next;

@@ -42,16 +42,16 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		else
 			shndx_ok = 1;
 		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
-		+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
+		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if (opt & OPT_O)
 			ft_printf("%s:", file);
 		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%0*x", padding / 2, read_unsigned_int(sym->sym.st_value, opt));
+			ft_printf("%0*x", padding / 2, sym->sym.st_value);
 		else
 		{
-			if (read_uint16(sym->sym.st_shndx, opt) != 0)
-				ft_printf("%0*x", padding, read_uint32(sym->sym.st_value, opt));
+			if (sym->sym.st_shndx != 0)
+				ft_printf("%0*x", padding, sym->sym.st_value);
 			else
 				ft_printf("%*s", padding, "");
 		}
@@ -135,7 +135,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym.st_info));
 			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym.st_other));
 			ft_printf(", S = %d", read_uint32(sym->sym.st_size, opt));
-			ft_printf(", H = %d", read_uint16(sym->sym.st_shndx, opt));
+			ft_printf(", H = %d", sym->sym.st_shndx);
 			if (shndx_ok)
 			{
 				ft_printf(" (%s)",
@@ -226,7 +226,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			}
 			else
 			{
-				switch (read_uint16(sym->sym.st_shndx, opt))
+				switch (sym->sym.st_shndx)
 				{
 					case SHN_UNDEF:
 					ft_printf(" (UNDEF)");

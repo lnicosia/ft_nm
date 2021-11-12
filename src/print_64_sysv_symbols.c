@@ -37,20 +37,20 @@ void	print_64_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *head
 	while (lst)
 	{
 		sym = (t_sym64*)lst->content;
-		if ((opt & OPT_D && read_uint16(sym->sym.st_shndx, opt) != 0))
+		if ((opt & OPT_D && sym->sym.st_shndx != 0))
 			//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 			//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_WEAK))
 		{
 			lst = lst->next;
 			continue ;
 		}
-		if (read_uint16(sym->sym.st_shndx, opt) == 0
-			|| read_uint16(sym->sym.st_shndx, opt) >= read_uint16(header->e_shnum, opt))
+		if (sym->sym.st_shndx == 0
+			|| sym->sym.st_shndx >= read_uint16(header->e_shnum, opt))
 			shndx_ok = 0;
 		else
 			shndx_ok = 1;
 		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
-				+ (read_uint16(header->e_shentsize, opt) * read_uint16(sym->sym.st_shndx, opt)));
+				+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if (opt & OPT_O)
 			ft_printf("%s:", file);
 		if (opt & OPT_D)
@@ -67,11 +67,11 @@ void	print_64_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *head
 			ft_printf("%-20s", sym->name);
 		if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 				|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("|%*x%0*x|", padding / 2, 0xffffffff, padding / 2, read_long_unsigned_int(sym->sym.st_value, opt));
+			ft_printf("|%*x%0*x|", padding / 2, 0xffffffff, padding / 2, sym->sym.st_value);
 		else
 		{
-			if (read_uint16(sym->sym.st_shndx, opt) != 0)
-				ft_printf("|%0*x|", padding, read_long_unsigned_int(sym->sym.st_value, opt));
+			if (sym->sym.st_shndx != 0)
+				ft_printf("|%0*x|", padding, sym->sym.st_value);
 			else
 				ft_printf("|%*s|", padding, "");
 		}
@@ -129,7 +129,7 @@ void	print_64_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *head
 		}
 		else if (!(opt & OPT_LTO))
 		{
-			switch (read_uint16(sym->sym.st_shndx, opt))
+			switch (sym->sym.st_shndx)
 			{
 				case SHN_UNDEF:
 					ft_printf("*UND*");

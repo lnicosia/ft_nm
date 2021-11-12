@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT="-n -ov -a"
+OPT="-n -ov -a --format=sysv"
 
 file=a.out
 echo "$file diff:"
