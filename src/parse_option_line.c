@@ -29,7 +29,7 @@ int		print_usage_stdin(void)
 	ft_printf("  -a, --debug-syms\tDisplay debugger-only symbols\n");
 	ft_printf("  -A, --print-file-name\tPrint name of the input file before every symbol\n");
 	ft_printf("  -B\t\t\tSame as --format=bsd\n");
-	ft_printf("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
+	//ft_printf("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
 	ft_printf("      --defined-only\tDisplay only defined symbols\n");
 	ft_printf("  -e\t\t\t(ignored)\n");
 	ft_printf("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
@@ -42,7 +42,7 @@ int		print_usage_stdin(void)
 	ft_printf("  -S, --print-size\tPrint size of defined symbols\n");
 	ft_printf("      --size-sort\tSort symbols by size\n");
 	ft_printf("  -u, --undefined-only\tDisplay only undefined symbols\n");
-	ft_printf("  @FILE\t\t\tRead options from FILE\n");
+	//ft_printf("  @FILE\t\t\tRead options from FILE\n");
 	ft_printf("  -h, --help\t\tDisplay this information\n");
 	ft_printf("      --verbose\t\tDisplay additional information about the symbols\n");
 	ft_printf("  -V, --version\t\tDisplay this program's version number\n");
@@ -60,7 +60,7 @@ int		print_usage(void)
 	custom_error("  -a, --debug-syms\tDisplay debugger-only symbols\n");
 	custom_error("  -A, --print-file-name\tPrint name of the input file before every symbol\n");
 	custom_error("  -B\t\t\tSame as --format=bsd\n");
-	custom_error("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
+	//custom_error("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
 	custom_error("      --defined-only\tDisplay only defined symbols\n");
 	custom_error("  -e\t\t\t(ignored)\n");
 	custom_error("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
@@ -73,7 +73,7 @@ int		print_usage(void)
 	custom_error("  -S, --print-size\tPrint size of defined symbols\n");
 	custom_error("      --size-sort\tSort symbols by size\n");
 	custom_error("  -u, --undefined-only\tDisplay only undefined symbols\n");
-	custom_error("  @FILE\t\t\tRead options from FILE\n");
+	//custom_error("  @FILE\t\t\tRead options from FILE\n");
 	custom_error("  -h, --help\t\tDisplay this information\n");
 	custom_error("      --verbose\t\tDisplay additional information about the symbols\n");
 	custom_error("  -v\t\t\tSame as -n\n");
@@ -97,8 +97,8 @@ int		check_opt(char *av, int *opt)
 		*opt |= OPT_S;
 	else if (*av == 'u')
 		*opt |= OPT_U;
-	else if (*av == 'D')
-		*opt |= OPT_D;
+//	else if (*av == 'D')
+//		*opt |= OPT_D;
 	else if (*av == 'r')
 		*opt |= OPT_R;
 	else if (*av == 'n')
@@ -141,8 +141,8 @@ int		parse_option_line(char *av, int *opt)
 			*opt |= OPT_A;
 		else if (ft_strnequ(av, "--print-file-name", ft_strlen(av)))
 			*opt |= OPT_O;
-		else if (ft_strnequ(av, "--dynamic", ft_strlen(av)))
-			*opt |= OPT_D;
+		//else if (ft_strnequ(av, "--dynamic", ft_strlen(av)))
+		//	*opt |= OPT_D;
 		else if (ft_strnequ(av, "--defined-only", ft_strlen(av)))
 			*opt |= OPT_DE;
 		else if (ft_strbegin(av, "--format="))
@@ -184,9 +184,9 @@ int		parse_option_line(char *av, int *opt)
 			return (print_usage());
 		}
 	}
-	else if (*av == '@')
-	{
-	}
+	//else if (*av == '@')
+	//{
+	//}
 	else
 	{
 		av++;
