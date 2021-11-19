@@ -36,6 +36,21 @@ int	(*set_compare_func(int type, int opt))(void *s1, void *s2)
 			return (compare_addresses32);
 		}
 	}
+	if (opt & OPT_SIZE_SORT)
+	{
+		if (type == 64)
+		{
+			if (opt & OPT_R)
+				return (rcompare_sizes64);
+			return (compare_sizes64);
+		}
+		else if (type == 32)
+		{
+			if (opt & OPT_R)
+				return (rcompare_sizes32);
+			return (compare_sizes32);
+		}
+	}
 	if (type == 64)
 	{
 		if (opt & OPT_R)

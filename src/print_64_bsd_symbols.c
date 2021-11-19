@@ -33,7 +33,16 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	while (lst)
 	{
 		sym = (t_sym64*)lst->content;
-		if ((opt & OPT_D && sym->sym.st_shndx != 0))
+		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
+		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
+		if ((opt & OPT_D && sym->sym.st_shndx != 0)
+			|| (opt & OPT_SIZE_SORT &&
+				((ELF64_ST_TYPE(sym->sym.st_info) != STT_SECTION && sym->sym.st_size == 0)
+				|| (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION
+					&& (read_uint64(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_WRITE)
+					|| read_uint64(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_EXECINSTR)
+					))
+				|| sym->type == 'U')))
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_WEAK))
 		{
@@ -44,22 +53,30 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			shndx_ok = 0;
 		else
 			shndx_ok = 1;
-		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
-		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if (opt & OPT_O)
 			ft_printf("%s:", file);
-		if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
-			|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, sym->sym.st_value);
+		if (opt & OPT_SIZE_SORT)
+		{
+			//if (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION)
+			//	ft_printf("%*0x", padding, read_uint64(sheader->sh_size, opt));
+			//else
+				ft_printf("%*0x", padding, sym->sym.st_size);
+		}
 		else
 		{
-			if (sym->sym.st_shndx != 0)
-				ft_printf("%0*x", padding, sym->sym.st_value);
+			if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+				|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
+				ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, sym->sym.st_value);
 			else
-				ft_printf("%*s", padding, "");
+			{
+				if (sym->sym.st_shndx != 0)
+					ft_printf("%0*x", padding, sym->sym.st_value);
+				else
+					ft_printf("%*s", padding, "");
+			}
+			if (opt & OPT_S && sym->sym.st_size != 0)
+				ft_printf(" %*0x", padding, sym->sym.st_size);
 		}
-		if (opt & OPT_S && read_uint64(sym->sym.st_size, opt) != 0)
-			ft_printf(" %*0x", padding, read_uint64(sym->sym.st_size, opt));
 		if (opt & OPT_VERBOSE)
 			ft_printf(" %3d", sym->sym.st_info);
 		ft_printf(" %c", sym->type);
@@ -139,7 +156,7 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			}
 			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym.st_info));
 			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym.st_other));
-			ft_printf(", S = %d", read_uint64(sym->sym.st_size, opt));
+			ft_printf(", S = %d", sym->sym.st_size);
 			ft_printf(", H = %d", sym->sym.st_shndx);
 			if (shndx_ok)
 			{

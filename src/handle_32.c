@@ -46,25 +46,25 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		ft_printf("\tOther = %d\n", sym->sym.st_other);
 		ft_printf("\tSection = %hu", sym->sym.st_shndx);
 		if (shndx_ok)
-			ft_printf(" (%s)\n", ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
+			ft_printf(" (%s)", ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt));
 		else
 		{
 			switch (sym->sym.st_shndx)
 			{
 				case SHN_UNDEF:
-					ft_printf(" (UNDEF)\n");
+					ft_printf(" (UNDEF)");
 					break ;
 				case SHN_ABS:
-					ft_printf(" (ABS)\n");
+					ft_printf(" (ABS)");
 					break ;
 				case SHN_COMMON:
-					ft_printf(" (COMMON)\n");
+					ft_printf(" (COMMON)");
 					break ;
 			}
 		}
-		ft_printf("\tValue = %016x\n", sym->sym.st_value);
-		ft_printf("\tSize = %lu\n", read_uint32(sym->sym.st_size, opt));
+		ft_printf("\n\tValue = %016x\n", sym->sym.st_value);
+		ft_printf("\tSize = %lu\n", sym->sym.st_size);
 	}
 	if (shndx_ok)
 	{
@@ -153,7 +153,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		case STB_WEAK:
 			if (ELF32_ST_TYPE(sym->sym.st_info) == STT_OBJECT)
 			{
-				if (read_uint32(sym->sym.st_size, opt) == 0)
+				if (sym->sym.st_size == 0)
 					sym->type = 'v';
 				else
 					sym->type = 'V';
@@ -421,6 +421,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				+ read_uint32(elf_sym->st_name, opt);
 				sym.sym.st_value = read_unsigned_int(elf_sym->st_value, opt);
 				sym.sym.st_shndx = read_uint16(elf_sym->st_shndx, opt);
+				sym.sym.st_size = read_uint32(elf_sym->st_size, opt);
 				if (opt & OPT_A && ELF32_ST_TYPE(elf_sym->st_info) == STT_SECTION)
 				{
 					sym.name = ptr + read_unsigned_int(shstrhdr->sh_offset, opt)
@@ -451,7 +452,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 				}
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (sym.type == 'C')
-					sym.sym.st_value = read_uint32(sym.sym.st_size, opt);
+					sym.sym.st_value = sym.sym.st_size;
 				if (!(new = ft_dlstnew(&sym, sizeof(sym))))
 				{
 					custom_error("ft_lstnew:");

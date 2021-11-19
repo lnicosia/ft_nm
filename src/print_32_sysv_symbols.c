@@ -36,7 +36,8 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 		sym = (t_sym32*)lst->content;
 		if ((opt & OPT_D
 				&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
-				&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK))
+				&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
+			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;
 			continue ;
@@ -117,8 +118,8 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 			ft_printf("|%18s|", type);
 		else
 			ft_printf("|%18s|", "");
-		if (read_uint32(sym->sym.st_size, opt))
-			ft_printf("%0*x|", padding, read_uint32(sym->sym.st_size, opt));
+		if (sym->sym.st_size)
+			ft_printf("%0*x|", padding, sym->sym.st_size);
 		else
 			ft_printf("%*s|", padding, "");
 		ft_printf("     |");

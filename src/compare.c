@@ -46,6 +46,35 @@ int		compare_names64(void *s1, void *s2)
 	return (ft_strcmp(((t_sym64*)s1)->name, ((t_sym64*)s2)->name));
 }
 
+int		compare_sizes32(void *s1, void *s2)
+{
+	t_sym32	*sym1 = (t_sym32*)s1;
+	t_sym32	*sym2 = (t_sym32*)s2;
+	uint32_t size1 = sym1->sym.st_size;
+	uint32_t size2 = sym2->sym.st_size;
+	if (size1 == size2)
+	{
+		if (ft_strequ(sym1->name, sym2->name))
+			return (compare_addresses32(s1, s2));
+		return (compare_names32(s1, s2));
+	}
+	return (size1 > size2);
+}
+
+int		compare_sizes64(void *s1, void *s2)
+{
+	t_sym64	*sym1 = (t_sym64*)s1;
+	t_sym64	*sym2 = (t_sym64*)s2;
+	uint64_t size1 = sym1->sym.st_size;
+	uint64_t size2 = sym2->sym.st_size;
+	if (size1 == size2)
+	{
+		if (ft_strequ(sym1->name, sym2->name))
+			return (compare_addresses64(s1, s2));
+		return (compare_names64(s1, s2));
+	}
+	return (size1 > size2);
+}
 
 int		compare_addresses32(void *s1, void *s2)
 {
@@ -94,6 +123,35 @@ int		rcompare_names64(void *s1, void *s2)
 	return (ft_strcmp(((t_sym64*)s2)->name, ((t_sym64*)s1)->name));
 }
 
+int		rcompare_sizes32(void *s1, void *s2)
+{
+	t_sym32	*sym1 = (t_sym32*)s1;
+	t_sym32	*sym2 = (t_sym32*)s2;
+	uint32_t size1 = sym1->sym.st_size;
+	uint32_t size2 = sym2->sym.st_size;
+	if (size1 == size2)
+	{
+		if (ft_strequ(sym1->name, sym2->name))
+			return (compare_addresses32(s1, s2));
+		return (rcompare_names32(s1, s2));
+	}
+	return (size1 < size2);
+}
+
+int		rcompare_sizes64(void *s1, void *s2)
+{
+	t_sym64	*sym1 = (t_sym64*)s1;
+	t_sym64	*sym2 = (t_sym64*)s2;
+	uint64_t size1 = sym1->sym.st_size;
+	uint64_t size2 = sym2->sym.st_size;
+	if (size1 == size2)
+	{
+		if (ft_strequ(sym1->name, sym2->name))
+			return (compare_addresses64(s1, s2));
+		return (rcompare_names64(s1, s2));
+	}
+	return (size1 < size2);
+}
 
 int		rcompare_addresses32(void *s1, void *s2)
 {

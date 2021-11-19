@@ -56,6 +56,8 @@ int		parse_option_line(char *av, int *opt);
 //		Comparison functions used to sort symbols
 int 	(*set_compare_func(int type, int opt))(void *, void *);
 int		no_sort(void *s1, void *s2);
+int		compare_sizes32(void *s1, void *s2);
+int		compare_sizes64(void *s1, void *s2);
 int		compare_names32(void *s1, void *s2);
 int		compare_names64(void *s1, void *s2);
 int		compare_addresses32(void *s1, void *s2);
@@ -67,6 +69,8 @@ int		compare_names_no_special(void *s1, void *s2);
 //		exactly a reverse (addresses are still sorted
 //		ascending)
 int		rno_sort(void *s1, void *s2);
+int		rcompare_sizes32(void *s1, void *s2);
+int		rcompare_sizes64(void *s1, void *s2);
 int		rcompare_names32(void *s1, void *s2);
 int		rcompare_names64(void *s1, void *s2);
 int		rcompare_addresses32(void *s1, void *s2);

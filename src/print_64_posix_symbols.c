@@ -34,7 +34,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	while (lst)
 	{
 		sym = (t_sym64*)lst->content;
-		if ((opt & OPT_D && sym->sym.st_shndx != 0))
+		if ((opt & OPT_D && sym->sym.st_shndx != 0)
+			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_WEAK))
 		{
@@ -66,8 +67,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			else
 				ft_printf(" %8s", "");
 		}
-		if (read_uint64(sym->sym.st_size, opt) && sym->sym.st_shndx != 0)
-			ft_printf(" %0*x", padding, read_uint64(sym->sym.st_size, opt));
+		if (sym->sym.st_size && sym->sym.st_shndx != 0)
+			ft_printf(" %0*x", padding, sym->sym.st_size);
 		else if (sym->sym.st_shndx != 0)
 			ft_printf(" ");
 		ft_printf("\n");

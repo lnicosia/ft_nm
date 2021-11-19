@@ -32,7 +32,8 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		sym = (t_sym32*)lst->content;
 		if ((opt & OPT_D
 			&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
-			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK))
+			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
+			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;
 			continue ;
@@ -45,18 +46,23 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if (opt & OPT_O)
 			ft_printf("%s:", file);
-		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
-			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("%0*x", padding / 2, sym->sym.st_value);
+		if (opt & OPT_SIZE_SORT)
+			ft_printf("%*0x", padding, sym->sym.st_size);
 		else
 		{
-			if (sym->sym.st_shndx != 0)
-				ft_printf("%0*x", padding, sym->sym.st_value);
+			if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
+				|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
+				ft_printf("%0*x", padding / 2, sym->sym.st_value);
 			else
-				ft_printf("%*s", padding, "");
+			{
+				if (sym->sym.st_shndx != 0)
+					ft_printf("%0*x", padding, sym->sym.st_value);
+				else
+					ft_printf("%*s", padding, "");
+			}
+			if (opt & OPT_S && sym->sym.st_size != 0)
+				ft_printf(" %*0x", padding, sym->sym.st_size);
 		}
-		if (opt & OPT_S && read_uint32(sym->sym.st_size, opt) != 0)
-			ft_printf(" %*0x", padding, read_uint32(sym->sym.st_size, opt));
 		if (opt & OPT_VERBOSE)
 			ft_printf(" %3d", sym->sym.st_info);
 		ft_printf(" %c", sym->type);
@@ -136,7 +142,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			}
 			ft_printf(" (%d)", ELF32_ST_BIND(sym->sym.st_info));
 			ft_printf(", O = %d", ELF32_ST_VISIBILITY(sym->sym.st_other));
-			ft_printf(", S = %d", read_uint32(sym->sym.st_size, opt));
+			ft_printf(", S = %d", sym->sym.st_size);
 			ft_printf(", H = %d", sym->sym.st_shndx);
 			if (shndx_ok)
 			{

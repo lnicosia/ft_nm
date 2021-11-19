@@ -33,7 +33,8 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		sym = (t_sym32*)lst->content;
 		if ((opt & OPT_D
 			&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
-			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK))
+			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
+			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;
 			continue ;
@@ -63,8 +64,8 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			else
 				ft_printf(" %8s", "");
 		}
-		if (read_uint32(sym->sym.st_size, opt) && sym->sym.st_shndx != 0)
-			ft_printf(" %0*x", padding, read_uint32(sym->sym.st_size, opt));
+		if (sym->sym.st_size && sym->sym.st_shndx != 0)
+			ft_printf(" %0*x", padding, sym->sym.st_size);
 		else if (sym->sym.st_shndx != 0)
 			ft_printf(" ");
 		ft_printf("\n");
