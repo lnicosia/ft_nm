@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #OPT="a --size"
-OPT="a --size"
+OPT="u --format=sysv"
 
 file=a.out
 ft_nm_output=ft_nm-$file.txt

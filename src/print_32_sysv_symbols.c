@@ -28,7 +28,11 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 	while (lst && lst->prev)
 		lst = lst->prev;
 	ft_printf("\n\n");
-	ft_printf("Symbols from %s:\n\n", file);
+	if (opt & OPT_U)
+		ft_printf("Undefined s");
+	else
+		ft_printf("S");
+	ft_printf("ymbols from %s:\n\n", file);
 	ft_printf("%-22s%-*s%-13s%-13s%-*s%-6s%s\n\n", "Name", padding, "Value", "Class", "Type",
 			padding + 1, "Size", "Line", "Section");
 	while (lst)
@@ -37,6 +41,8 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 		if ((opt & OPT_D
 				&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 				&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
+			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+				&& sym->type != 'v')
 			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;

@@ -35,6 +35,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 	{
 		sym = (t_sym64*)lst->content;
 		if ((opt & OPT_D && sym->sym.st_shndx != 0)
+			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+				&& sym->type != 'v')
 			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_WEAK))

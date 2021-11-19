@@ -36,6 +36,8 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		Elf64_Shdr	*sheader = (Elf64_Shdr*) (ptr + read_long_unsigned_int(header->e_shoff, opt)
 		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if ((opt & OPT_D && sym->sym.st_shndx != 0)
+			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+				&& sym->type != 'v')
 			|| (opt & OPT_SIZE_SORT &&
 				((ELF64_ST_TYPE(sym->sym.st_info) != STT_SECTION && sym->sym.st_size == 0)
 				|| (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION
