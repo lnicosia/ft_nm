@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/02/22 14:03:19 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/03/26 18:08:21 by lnicosia         ###   ########.fr       */
+/*   Updated: 2022/05/11 16:00:06 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,36 @@ void	put_colors_4(const char *s, int *i, t_data *data)
 	{
 		fill_buffer(data, BMAGENTA, 5);
 		(*i) += 9;
+	}
+	else if (pf_strnequ(s + *i, "{black}", 7) == 1)
+	{
+		fill_buffer(data, BLACK, 5);
+		(*i) += 6;
+	}
+	else if (pf_strnequ(s + *i, "{bblack}", 8) == 1)
+	{
+		fill_buffer(data, BBLACK, 5);
+		(*i) += 7;
+	}
+	else if (pf_strnequ(s + *i, "{blink}", 7) == 1)
+	{
+		fill_buffer(data, BLINK, 5);
+		(*i) += 7;
+	}
+	else if (pf_strnequ(s + *i, "{concealed}", 11) == 1)
+	{
+		fill_buffer(data, CONCEALED, 5);
+		(*i) += 7;
+	}
+	else if (pf_strnequ(s + *i, "{white}", 7) == 1)
+	{
+		fill_buffer(data, WHITE, 5);
+		(*i) += 7;
+	}
+	else if (pf_strnequ(s + *i, "{bwhite}", 8) == 1)
+	{
+		fill_buffer(data, BWHITE, 5);
+		(*i) += 7;
 	}
 }
 
@@ -117,23 +147,30 @@ void	put_colors(const char *s, int *i, t_data *data)
 
 void	parse_color(const char *s, int *i, t_data *data)
 {
-	if (pf_strnequ(s + *i, "{red}", 5) == 1
-			|| pf_strnequ(s + *i, "{green}", 7) == 1
-			|| pf_strnequ(s + *i, "{cyan}", 6) == 1
-			|| pf_strnequ(s + *i, "{reset}", 7) == 1
-			|| pf_strnequ(s + *i, "{yellow}", 8) == 1
-			|| pf_strnequ(s + *i, "{blue}", 6) == 1
-			|| pf_strnequ(s + *i, "{magenta}", 9) == 1
-			|| pf_strnequ(s + *i, "{bold}", 6) == 1
-			|| pf_strnequ(s + *i, "{invert}", 8) == 1
-			|| pf_strnequ(s + *i, "{underline}", 11) == 1
-			|| pf_strnequ(s + *i, "{bred}", 6) == 1
-			|| pf_strnequ(s + *i, "{bgreen}", 8) == 1
-			|| pf_strnequ(s + *i, "{bcyan}", 7) == 1
-			|| pf_strnequ(s + *i, "{breset}", 8) == 1
-			|| pf_strnequ(s + *i, "{byellow}", 9) == 1
-			|| pf_strnequ(s + *i, "{bblue}", 7) == 1
-			|| pf_strnequ(s + *i, "{bmagenta}", 10) == 1)
+	if (pf_strnequ(s + *i, "{reset}", 7) == 1
+		|| pf_strnequ(s + *i, "{bold}", 6) == 1
+		|| pf_strnequ(s + *i, "{underline}", 11) == 1
+		|| pf_strnequ(s + *i, "{blink}", 7) == 1
+		|| pf_strnequ(s + *i, "{invert}", 8) == 1
+		|| pf_strnequ(s + *i, "{concealed}", 11) == 1
+
+		|| pf_strnequ(s + *i, "{black}", 7) == 1
+		|| pf_strnequ(s + *i, "{red}", 5) == 1
+		|| pf_strnequ(s + *i, "{green}", 7) == 1
+		|| pf_strnequ(s + *i, "{yellow}", 8) == 1
+		|| pf_strnequ(s + *i, "{blue}", 6) == 1
+		|| pf_strnequ(s + *i, "{magenta}", 9) == 1
+		|| pf_strnequ(s + *i, "{cyan}", 6) == 1
+		|| pf_strnequ(s + *i, "{white}", 7) == 1
+
+		|| pf_strnequ(s + *i, "{bblack}", 8) == 1
+		|| pf_strnequ(s + *i, "{bred}", 6) == 1
+		|| pf_strnequ(s + *i, "{bgreen}", 8) == 1
+		|| pf_strnequ(s + *i, "{byellow}", 9) == 1
+		|| pf_strnequ(s + *i, "{bblue}", 7) == 1
+		|| pf_strnequ(s + *i, "{bmagenta}", 10) == 1
+		|| pf_strnequ(s + *i, "{bcyan}", 7) == 1
+		|| pf_strnequ(s + *i, "{bwhite}", 8) == 1)
 	{
 		if ((*i > 0 && s[*i - 1] != '{') || *i == 0)
 			put_colors(s, i, data);

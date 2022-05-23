@@ -6,7 +6,7 @@
 #    By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/12/06 15:56:21 by lnicosia          #+#    #+#              #
-#    Updated: 2021/03/29 11:43:49 by lnicosia         ###   ########.fr        #
+#    Updated: 2022/05/11 16:00:29 by lnicosia         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,8 +40,9 @@ SRC_RAW = ft_memccpy.c ft_memcpy.c ft_memset.c ft_bzero.c ft_memmove.c \
 		  thread_pool_work.c init_tpool.c free_tpool.c skip_chars.c \
 		  check_chars.c ft_rmchar.c ft_dlstnew.c ft_dlstdelfront.c \
 		  ft_dlstinsert.c ft_dlstbackward.c ft_dlstforward.c \
-		  ft_dlstlen.c ft_stricmp.c print_bits.c reverse_bits.c \
-		  reverse_endian.c ft_strbegin.c
+		  ft_dlstlen.c ft_stricmp.c print_bits.c ft_strbegin.c \
+		  ft_ceil.c ft_centiceil.c is_a_special_char.c replace_char.c \
+		  contains_special_chars.c ft_dlist_to_array.c \
 
 HEADERS = libft.h thread_pool.h get_next_line.h
 
@@ -54,7 +55,7 @@ PRINTF_SRC_RAW = ft_printf.c ft_dprintf.c base_utils.c parse_colors.c \
 				 custom_error.c custom_invalid.c
 
 
-PRINTF_HEADERS = ft_printf.h base_utils.h color.h put_padding.h 
+PRINTF_HEADERS = ft_printf.h base_utils.h color.h put_padding.h
 
 SRC = $(addprefix $(SRC_DIR)/, $(SRC_RAW))
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_RAW:.c=.o))
@@ -66,14 +67,13 @@ PRINTF_OBJ = $(addprefix $(OBJ_DIR)/, $(PRINTF_SRC_RAW:.c=.o))
 ifeq ($(OS), Windows_NT)
 	OPTI_FLAGS = -O3
 else
-    OPTI_FLAGS = -O3
+    OPTI_FLAGS = -O3 -flto
 endif
 
 CFLAGS = -Wall -Wextra -Werror -Wpadded -I $(INCLUDES_DIR) -I $(PRINTF_DIR) \
 			-Wno-unused-result -Wno-misleading-indentation \
 			$(OPTI_FLAGS) \
-			#-fsanitize=address 
-			#-g3 \
+			#-fsanitize=address -g3 \
 
 # Color declarations
 RED := "\e[0;31m"
@@ -91,19 +91,19 @@ $(OBJ_DIR):
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDES)
 	@printf $(YELLOW)"\e[0;33mCompiling $<\n"$(RESET)
-	@gcc -c $< -o $@ $(CFLAGS) 
+	gcc -c $< -o $@ $(CFLAGS)
 
 $(OBJ_DIR)/%.o: $(PRINTF_DIR)/%.c $(PRINTF_DIR)
 	@printf $(YELLOW)"\e[0;33mCompiling $<\n"$(RESET)
-	@gcc -c $< -o $@ $(CFLAGS) 
+	gcc -c $< -o $@ $(CFLAGS)
 
-$(BIN_DIR)/$(NAME): $(OBJ_DIR) $(OBJ) $(PRINTF_OBJ) 
+$(BIN_DIR)/$(NAME): $(OBJ_DIR) $(OBJ) $(PRINTF_OBJ)
 	@printf "\e[0;36m[INFO] Linking ${NAME}\e[0m\n"
-	@ar rc $(NAME) $(OBJ) $(PRINTF_OBJ) $(BMP_PARSER_OBJ)
-	@ranlib $(NAME)
+	ar rc $(NAME) $(OBJ) $(PRINTF_OBJ) $(BMP_PARSER_OBJ)
+	ranlib $(NAME)
 	@printf ${GREEN}"[INFO] Linked $(NAME) with success\n"${RESET}
 
-clean: 
+clean:
 	@printf ${CYAN}"[INFO] Removing objs from the libft\n"${RESET}
 	rm -rf $(OBJ_DIR)
 

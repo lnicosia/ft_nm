@@ -5,22 +5,31 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/29 19:13:47 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/09/22 13:23:54 by lnicosia         ###   ########.fr       */
+/*   Created: 2021/04/08 11:39:13 by lnicosia          #+#    #+#             */
+/*   Updated: 2021/04/08 12:13:19 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
 
-void	print_bits(void *ptr, size_t length)
+/*
+**	Print bits of a variable
+*/
+
+void	print_bits(void *ptr, size_t size, int flags)
 {
-	uint8_t *bytes = (uint8_t *)ptr;
-	for (size_t i = 0; i < length / 8; i++)
+	size_t		i;
+	int	bits;
+
+	(void)flags;
+	bits = * (int *) ptr;
+	i = 0;
+	//ft_printf("%d", bits >> 63);
+	while (i < size)
 	{
-		for (size_t j = 0; j < 8; j++)
-		{
-			ft_printf("%d ", (bytes[(length / 8) - i - 1] >> (8 - j - 1)) & 1);
-		}
-		ft_printf(" ");
+		ft_printf("%hhd", (bits << i) >> 31);
+		i++;
 	}
+	write(STDOUT_FILENO, "\n", 1);
 }

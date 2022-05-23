@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dlstlen.c                                       :+:      :+:    :+:   */
+/*   contains_special_chars.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/25 14:19:49 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/03/25 14:21:55 by lnicosia         ###   ########.fr       */
+/*   Created: 2019/07/15 20:54:27 by lnicosia          #+#    #+#             */
+/*   Updated: 2022/05/10 11:29:48 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_dlstlen(t_dlist *lst)
+int	contains_special_chars(char* str)
 {
-	size_t	len;
+	size_t	i;
+	int		ret;
 
-	len = 0;
-	if (lst)
-		len = 1;
-	while (lst && lst->prev)
-		lst = lst->prev;
-	while (lst && lst->next)
+	i = 0;
+	while (str[i])
 	{
-		len++;
-		lst = lst->next;
+		if ((ret = is_a_special_char(str[i])) != 0)
+			return (ret);
+		i++;
 	}
-	return (len);
+	return (0);
 }

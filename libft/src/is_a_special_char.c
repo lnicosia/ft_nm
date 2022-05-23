@@ -1,30 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dlstlen.c                                       :+:      :+:    :+:   */
+/*   is_a_special_char.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/25 14:19:49 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/03/25 14:21:55 by lnicosia         ###   ########.fr       */
+/*   Created: 2019/07/15 20:54:27 by lnicosia          #+#    #+#             */
+/*   Updated: 2022/05/10 14:48:50 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-size_t	ft_dlstlen(t_dlist *lst)
+int	is_a_special_char(char c)
 {
-	size_t	len;
-
-	len = 0;
-	if (lst)
-		len = 1;
-	while (lst && lst->prev)
-		lst = lst->prev;
-	while (lst && lst->next)
-	{
-		len++;
-		lst = lst->next;
-	}
-	return (len);
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+		|| (c >= '0' && c <= '9') || c == '_' || c == '.'
+		|| c == '-' || c == '+' || c == '{' || c == '}'
+		|| c == '~' || c == ':' || c == '#' || c == '%'
+		|| c == ',' || c == '@' || c == '/')
+		return (0);
+	if (c == '\'')
+		return (2);
+	if (c == '\n')
+		return (3);
+	return (1);
 }

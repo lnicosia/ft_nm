@@ -156,7 +156,7 @@ void	ft_dlstinsert(t_dlist **lst, t_dlist *new, int (*compare)(void *, void *))
 			ft_dlstaddleft(lst, new);
 		else
 			ft_dlstreplaceleft(lst, new);
-			
+
 	}
 	/*ft_printf("Current list:\n");
 	print_dlist(*lst, 0);
@@ -236,7 +236,7 @@ int (*compare)(void *, void *))
 			ft_dlstaddleft(lst, new);
 		else
 			ft_dlstreplaceleft(lst, new);
-			
+
 	}
 	//ft_printf("Current list:\n");
 	//print_dlist(*lst, 0);

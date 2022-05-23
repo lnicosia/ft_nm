@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 11:01:13 by lnicosia          #+#    #+#             */
-/*   Updated: 2021/03/29 11:40:29 by lnicosia         ###   ########.fr       */
+/*   Updated: 2022/05/10 12:02:49 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@ typedef struct		s_dlist
 	struct s_dlist	*prev;
 }					t_dlist;
 
+/*
+**	Flag options for print_bits
+*/
+
+# define P_FLOAT	(1 << 0)
+# define P_INT		(1 << 1)
+# define P_CHAR		(1 << 2)
+
 
 void				ft_putchar(char c);
 void				ft_putstr(char const *s);
@@ -71,7 +79,6 @@ char				*ft_strjoin(char const *s1, char const *s2);
 int					ft_strnequ(char const *s1, char const *s2, size_t n);
 char				*ft_strsub(char const *s, unsigned int start, size_t len);
 int					ft_strequ(char const *s1, char const *s2);
-int					ft_strbegin(const char *haystack, const char *needle);
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 char				*ft_strmap(char const *s, char (*f)(char));
 void				ft_striteri(char *s, void (*f)(unsigned int, char*));
@@ -150,9 +157,14 @@ int					valid_int(char *line);
 int					valid_double(char *line);
 int					valid_hexa(char *line);
 char				*ft_rmchar(char *str, char c);
-void				print_bits(void *ptr, size_t length);
-void				reverse_bits(void *ptr, size_t length);
-void				reverse_endian(void *ptr, size_t length);
+void				print_bits(void *ptr, size_t size, int flag);
+int				ft_strbegin(char const *s1, char const *s2);
+double				ft_ceil(double nb);
+double				ft_centiceil(double nb);
+int					is_a_special_char(char c);
+int					contains_special_chars(char* str);
+char*				replace_char(char* str, char find, char* replace);
+void*				ft_dlist_to_array(t_dlist* lst);
 
 /*
 **	Double linked list functions
