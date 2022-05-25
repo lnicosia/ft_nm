@@ -6,7 +6,7 @@
 /*   By: lnicosia <lnicosia@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/07 11:01:13 by lnicosia          #+#    #+#             */
-/*   Updated: 2022/05/10 12:02:49 by lnicosia         ###   ########.fr       */
+/*   Updated: 2022/05/25 17:55:18 by lnicosia         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,8 @@ int					is_a_special_char(char c);
 int					contains_special_chars(char* str);
 char*				replace_char(char* str, char find, char* replace);
 void*				ft_dlist_to_array(t_dlist* lst);
+void				reverse_bits(void* ptr, size_t length);
+void				reverse_endian(void* ptr, size_t length);
 
 /*
 **	Double linked list functions
