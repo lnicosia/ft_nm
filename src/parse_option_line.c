@@ -18,7 +18,7 @@ int		print_version(void)
 	ft_printf("lnicosia's ft_nm version 1.0\n");
 	ft_printf("This program is free software; you may redistribute it\n");
 	ft_printf("This program has absolutely no warranty\n");
-	return (-2);
+	return (2);
 }
 
 int		print_usage_stdin(void)
@@ -42,14 +42,13 @@ int		print_usage_stdin(void)
 	ft_printf("  -S, --print-size\tPrint size of defined symbols\n");
 	ft_printf("      --size-sort\tSort symbols by size\n");
 	ft_printf("  -u, --undefined-only\tDisplay only undefined symbols\n");
-	//ft_printf("  @FILE\t\t\tRead options from FILE\n");
 	ft_printf("  -h, --help\t\tDisplay this information\n");
 	ft_printf("      --verbose\t\tDisplay additional information about the symbols\n");
 	ft_printf("  -V, --version\t\tDisplay this program's version number\n");
 	ft_printf("  -v\t\t\tSame as -n\n");
 	ft_printf("\nft_nm: supported targets: x86-64 x64, object files, .so\n");
 	ft_printf("Report bugs to <https://github.com/lnicosia/ft_nm>.\n");
-	return (-2);
+	return (2);
 }
 
 int		print_usage(void)
@@ -73,14 +72,13 @@ int		print_usage(void)
 	custom_error("  -S, --print-size\tPrint size of defined symbols\n");
 	custom_error("      --size-sort\tSort symbols by size\n");
 	custom_error("  -u, --undefined-only\tDisplay only undefined symbols\n");
-	//custom_error("  @FILE\t\t\tRead options from FILE\n");
 	custom_error("  -h, --help\t\tDisplay this information\n");
 	custom_error("      --verbose\t\tDisplay additional information about the symbols\n");
 	custom_error("  -v\t\t\tSame as -n\n");
 	custom_error("  -V, --version\t\tDisplay this program's version number\n");
 	custom_error("\nft_nm: supported targets: x86-64 x64, object files, .so\n");
 	custom_error("Report bugs to <https://github.com/lnicosia/ft_nm>.\n");
-	return (-1);
+	return (1);
 }
 
 int		check_opt(char *av, int *opt)
@@ -133,6 +131,8 @@ int		check_opt(char *av, int *opt)
 
 int		parse_option_line(char *av, int *opt)
 {
+	int	ret;
+
 	if (ft_strbegin(av, "--"))
 	{
 		if (ft_strequ(av, "--verbose"))
@@ -184,16 +184,13 @@ int		parse_option_line(char *av, int *opt)
 			return (print_usage());
 		}
 	}
-	//else if (*av == '@')
-	//{
-	//}
 	else
 	{
 		av++;
 		while (*av)
 		{
-			if (check_opt(av, opt))
-				return (-1);
+			if ((ret = check_opt(av, opt)) != 0)
+				return (ret);
 			av++;
 		}
 	}
@@ -213,23 +210,22 @@ int		is_arg_an_option_line(char *av)
 **	Parse all the options by checking arguments starting with '-'
 */
 
-int		parse_nm_options(int ac, char **av, int *opt)
+int		parse_nm_options(int ac, char **av, int *opt, int* nb_files)
 {
 	int	i;
-	int nb_files;
+	int	ret;
 	
 	i = 1;
-	nb_files = 0;
 	while (i < ac)
 	{
 		if (is_arg_an_option_line(av[i]))
 		{
-			if (parse_option_line(av[i], opt))
-				return (-1);
+			if ((ret = parse_option_line(av[i], opt)) != 0)
+				return (ret);
 		}
 		else
-			nb_files++;
+			(*nb_files)++;
 		i++;
 	}
-	return (nb_files);
+	return (0);
 }

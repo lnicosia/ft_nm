@@ -99,25 +99,33 @@ int		ft_nm(int ac, char **av)
 	int	i;
 	int	nb_files;
 	int	opt;
+	int	ret;
 
 	opt = 0;
-	nb_files = parse_nm_options(ac, av, &opt);
+	nb_files = 0;
+	ret = parse_nm_options(ac, av, &opt, &nb_files);
+	if (ret == 1)
+		return (1);
+	else if (ret == 2)
+		return (0);
 	if (!(opt & OPT_POSIX) && !(opt & OPT_SYSV))
 		opt |= OPT_BSD;
-	if (nb_files == -1)
-		return (-1);
-	else if (nb_files == -2)
-		return (0);
 	if (nb_files > 1 && !(opt & OPT_O))
 		opt |= OPT_PRINT_FILE_NAME;
 	i = 1;
 	while (i < ac)
 	{
 		if (!is_arg_an_option_line(av[i]))
-			open_file(av[i], opt);
+		{
+			if (open_file(av[i], opt) != 0)
+				ret = 1;
+		}
 		i++;
 	}
 	if (nb_files == 0)
-		open_file("a.out", opt);
-	return (0);
+	{
+		if (open_file("a.out", opt))
+			return (1);
+	}
+	return (ret);
 }

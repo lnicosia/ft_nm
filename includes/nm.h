@@ -47,7 +47,7 @@ typedef struct		s_sym32
 }					t_sym32;
 
 int		ft_nm(int ac, char **av);
-int		parse_nm_options(int ac, char **av, int *opt);
+int		parse_nm_options(int ac, char **av, int *opt, int* nb_files);
 int		is_arg_an_option_line(char *av);
 void	handle_64(char *file, char *ptr, long int file_size, int opt);
 void	handle_32(char *file, char *ptr, long int file_size, int opt);
