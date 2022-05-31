@@ -15,39 +15,39 @@
 
 int		print_version(void)
 {
-	ft_printf("lnicosia's ft_nm version 1.0\n");
-	ft_printf("This program is free software; you may redistribute it\n");
-	ft_printf("This program has absolutely no warranty\n");
+	ft_bprintf(0, "lnicosia's ft_nm version 1.0\n");
+	ft_bprintf(0, "This program is free software; you may redistribute it\n");
+	ft_bprintf(0, "This program has absolutely no warranty\n");
 	return (2);
 }
 
 int		print_usage_stdin(void)
 {
-	ft_printf("Usage: ft_nm [option(s)] [file(s)]\n");
-	ft_printf(" List symbols in [file(s)] (a.out by default).\n");
-	ft_printf(" The options are:\n");
-	ft_printf("  -a, --debug-syms\tDisplay debugger-only symbols\n");
-	ft_printf("  -A, --print-file-name\tPrint name of the input file before every symbol\n");
-	ft_printf("  -B\t\t\tSame as --format=bsd\n");
-	//ft_printf("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
-	ft_printf("      --defined-only\tDisplay only defined symbols\n");
-	ft_printf("  -e\t\t\t(ignored)\n");
-	ft_printf("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
-	ft_printf("\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
-	ft_printf("  -n, --numeric-sort\tSort symbols numerically by address\n");
-	ft_printf("  -o\t\t\tSame as -A\n");
-	ft_printf("  -p, --no-sort\t\tDo no sort the symbols\n");
-	ft_printf("  -P, --portability\tSame as --format=posix\n");
-	ft_printf("  -r, --reverse-sort\tReverse the sense of the sort\n");
-	ft_printf("  -S, --print-size\tPrint size of defined symbols\n");
-	ft_printf("      --size-sort\tSort symbols by size\n");
-	ft_printf("  -u, --undefined-only\tDisplay only undefined symbols\n");
-	ft_printf("  -h, --help\t\tDisplay this information\n");
-	ft_printf("      --verbose\t\tDisplay additional information about the symbols\n");
-	ft_printf("  -V, --version\t\tDisplay this program's version number\n");
-	ft_printf("  -v\t\t\tSame as -n\n");
-	ft_printf("\nft_nm: supported targets: x86-64 x64, object files, .so\n");
-	ft_printf("Report bugs to <https://github.com/lnicosia/ft_nm>.\n");
+	ft_bprintf(0, "Usage: ft_nm [option(s)] [file(s)]\n");
+	ft_bprintf(0, " List symbols in [file(s)] (a.out by default).\n");
+	ft_bprintf(0, " The options are:\n");
+	ft_bprintf(0, "  -a, --debug-syms\tDisplay debugger-only symbols\n");
+	ft_bprintf(0, "  -A, --print-file-name\tPrint name of the input file before every symbol\n");
+	ft_bprintf(0, "  -B\t\t\tSame as --format=bsd\n");
+	//ft_bprintf(0, "  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
+	ft_bprintf(0, "      --defined-only\tDisplay only defined symbols\n");
+	ft_bprintf(0, "  -e\t\t\t(ignored)\n");
+	ft_bprintf(0, "      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
+	ft_bprintf(0, "\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
+	ft_bprintf(0, "  -n, --numeric-sort\tSort symbols numerically by address\n");
+	ft_bprintf(0, "  -o\t\t\tSame as -A\n");
+	ft_bprintf(0, "  -p, --no-sort\t\tDo no sort the symbols\n");
+	ft_bprintf(0, "  -P, --portability\tSame as --format=posix\n");
+	ft_bprintf(0, "  -r, --reverse-sort\tReverse the sense of the sort\n");
+	ft_bprintf(0, "  -S, --print-size\tPrint size of defined symbols\n");
+	ft_bprintf(0, "      --size-sort\tSort symbols by size\n");
+	ft_bprintf(0, "  -u, --undefined-only\tDisplay only undefined symbols\n");
+	ft_bprintf(0, "  -h, --help\t\tDisplay this information\n");
+	ft_bprintf(0, "      --verbose\t\tDisplay additional information about the symbols\n");
+	ft_bprintf(0, "  -V, --version\t\tDisplay this program's version number\n");
+	ft_bprintf(0, "  -v\t\t\tSame as -n\n");
+	ft_bprintf(0, "\nft_nm: supported targets: x86-64 x64, object files, .so\n");
+	ft_bprintf(0, "Report bugs to <https://github.com/lnicosia/ft_nm>.\n");
 	return (2);
 }
 

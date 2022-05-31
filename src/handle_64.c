@@ -39,15 +39,15 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 	if (opt & OPT_VERBOSE)
 	{
-		ft_printf("------------------------------------------------\n");
-		ft_printf("\tName = %u (%s)\n", read_uint32(sym->sym.st_name, opt),
+		ft_bprintf(0, "------------------------------------------------\n");
+		ft_bprintf(0, "\tName = %u (%s)\n", read_uint32(sym->sym.st_name, opt),
 		ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt));
-		ft_printf("\tInfo = %d\n", sym->sym.st_info);
-		ft_printf("\tOther = %d\n", sym->sym.st_other);
-		ft_printf("\tSection = %hu", sym->sym.st_shndx);
+		ft_bprintf(0, "\tInfo = %d\n", sym->sym.st_info);
+		ft_bprintf(0, "\tOther = %d\n", sym->sym.st_other);
+		ft_bprintf(0, "\tSection = %hu", sym->sym.st_shndx);
 		if (shndx_ok)
 		{
-			ft_printf(" (%s)", ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt)
+			ft_bprintf(0, " (%s)", ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt));
 		}
 		else
@@ -55,21 +55,21 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			switch (sym->sym.st_shndx)
 			{
 				case SHN_UNDEF:
-					ft_printf(" (UNDEF)");
+					ft_bprintf(0, " (UNDEF)");
 					break ;
 				case SHN_ABS:
-					ft_printf(" (ABS)");
+					ft_bprintf(0, " (ABS)");
 					break ;
 				case SHN_COMMON:
-					ft_printf(" (COMMON)");
+					ft_bprintf(0, " (COMMON)");
 					break ;
 				default:
-					ft_printf(" (?)");
+					ft_bprintf(0, " (?)");
 					break ;
 			}
 		}
-		ft_printf("\n\tValue = %016x\n", sym->sym.st_value);
-		ft_printf("\tSize = %lu\n", sym->sym.st_size);
+		ft_bprintf(0, "\n\tValue = %016x\n", sym->sym.st_value);
+		ft_bprintf(0, "\tSize = %lu\n", sym->sym.st_size);
 	}
 	if (shndx_ok)
 	{
@@ -248,34 +248,34 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		switch (read_uint16(header->e_type, opt))
 		{
 			case ET_NONE:
-				ft_printf("Unknown type\n");
+				ft_bprintf(0, "Unknown type\n");
 				break;
 			case ET_REL:
-				ft_printf("Relocatable file\n");
+				ft_bprintf(0, "Relocatable file\n");
 				break;
 			case ET_EXEC:
-				ft_printf("Executable file\n");
+				ft_bprintf(0, "Executable file\n");
 				break;
 			case ET_DYN:
-				ft_printf("Shared object\n");
+				ft_bprintf(0, "Shared object\n");
 				break;
 			case ET_CORE:
-				ft_printf("Core file\n");
+				ft_bprintf(0, "Core file\n");
 				break;
 		}
-		ft_printf("%hu program entries\n", read_uint16(header->e_phnum, opt));
-		ft_printf("%hu sections entries\n", read_uint16(header->e_shnum, opt));
-		ft_printf("Section headers offset = %lu\n", read_long_unsigned_int(header->e_shoff, opt));
-		ft_printf("Strings section header index = %hu\n", read_uint64(header->e_shstrndx, opt));
-		ft_printf("Sections header's size = %hu (total size = %d)\n", read_uint16(header->e_shentsize, opt),
+		ft_bprintf(0, "%hu program entries\n", read_uint16(header->e_phnum, opt));
+		ft_bprintf(0, "%hu sections entries\n", read_uint16(header->e_shnum, opt));
+		ft_bprintf(0, "Section headers offset = %lu\n", read_long_unsigned_int(header->e_shoff, opt));
+		ft_bprintf(0, "Strings section header index = %hu\n", read_uint64(header->e_shstrndx, opt));
+		ft_bprintf(0, "Sections header's size = %hu (total size = %d)\n", read_uint16(header->e_shentsize, opt),
 		read_uint16(header->e_shentsize, opt) * read_uint16(header->e_shnum, opt));
-		ft_printf("Program header's size = %hu (total size = %d)\n",
+		ft_bprintf(0, "Program header's size = %hu (total size = %d)\n",
 		read_uint16(header->e_phentsize, opt), read_uint16(header->e_phentsize, opt) * read_uint16(header->e_phnum, opt));
-			ft_printf("Endian = ");
+			ft_bprintf(0, "Endian = ");
 			if (ptr[5] == ELFDATA2LSB)
-				ft_printf("little\n");
+				ft_bprintf(0, "little\n");
 			else if (ptr[5] == ELFDATA2MSB)
-				ft_printf("big\n");
+				ft_bprintf(0, "big\n");
 
 	}
 	// Check if the file is big enough to contain all the section headers
@@ -284,7 +284,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		|| (long int)read_long_unsigned_int(header->e_phoff, opt)
 		+ read_uint16(header->e_phentsize, opt) * read_uint16(header->e_phnum, opt) > file_size)
 	{
-		ft_printf("ft_nm: %s: file too short\n", file);
+		ft_bprintf(0, "ft_nm: %s: file too short\n", file);
 		custom_error("ft_nm: %s: File truncated\n", file);
 		return ;
 	}
@@ -294,7 +294,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		&& (long int)read_long_unsigned_int(shstrhdr->sh_offset, opt)
 		+ (long int)read_uint64(shstrhdr->sh_size, opt) > file_size)
 	{
-		ft_printf("ft:nm: %s: file too short\n", file);
+		ft_bprintf(0, "ft:nm: %s: file too short\n", file);
 		custom_error("ft_nm: %s: File format not recognized\n", file);
 		ft_dlstdelfront(&lst, delsym);
 		return ;
@@ -309,75 +309,75 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			&& (long int)read_long_unsigned_int(sheader->sh_offset, opt)
 			+ (long int)read_uint64(sheader->sh_size, opt) > file_size)
 		{
-			ft_printf("ft:nm: %s: file too short\n", file);
+			ft_bprintf(0, "ft:nm: %s: file too short\n", file);
 			custom_error("ft_nm: %s: File truncated\n", file);
 			ft_dlstdelfront(&lst, delsym);
 			return ;
 		}
 		if (opt & OPT_VERBOSE)
 		{
-			ft_printf("------------------------------\n");
-			ft_printf("[Section %d]\n", i);
-			ft_printf("Section name = %u (%s)\n", read_uint32(sheader->sh_name, opt),
+			ft_bprintf(0, "------------------------------\n");
+			ft_bprintf(0, "[Section %d]\n", i);
+			ft_bprintf(0, "Section name = %u (%s)\n", read_uint32(sheader->sh_name, opt),
 			ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
-			ft_printf("Section type = %u", read_uint32(sheader->sh_type, opt));
+			ft_bprintf(0, "Section type = %u", read_uint32(sheader->sh_type, opt));
 			switch (read_uint32(sheader->sh_type, opt))
 			{
 				case SHT_NULL:
-					ft_printf(" (NULL)");
+					ft_bprintf(0, " (NULL)");
 					break ;
 				case SHT_PROGBITS:
-					ft_printf(" (PROGBITS)");
+					ft_bprintf(0, " (PROGBITS)");
 					break ;
 				case SHT_SYMTAB:
-					ft_printf(" (SYMTAB)");
+					ft_bprintf(0, " (SYMTAB)");
 					break ;
 				case SHT_STRTAB:
-					ft_printf(" (STRTAB)");
+					ft_bprintf(0, " (STRTAB)");
 					break ;
 				case SHT_RELA:
-					ft_printf(" (RELA)");
+					ft_bprintf(0, " (RELA)");
 					break ;
 				case SHT_HASH:
-					ft_printf(" (HASH)");
+					ft_bprintf(0, " (HASH)");
 					break ;
 				case SHT_DYNAMIC:
-					ft_printf(" (DYNAMIC)");
+					ft_bprintf(0, " (DYNAMIC)");
 					break ;
 				case SHT_NOTE:
-					ft_printf(" (NOTE)");
+					ft_bprintf(0, " (NOTE)");
 					break ;
 				case SHT_NOBITS:
-					ft_printf(" (NOBITS)");
+					ft_bprintf(0, " (NOBITS)");
 					break ;
 				case SHT_REL:
-					ft_printf(" (REL)");
+					ft_bprintf(0, " (REL)");
 					break ;
 				case SHT_SHLIB:
-					ft_printf(" (SHLIB)");
+					ft_bprintf(0, " (SHLIB)");
 					break ;
 				case SHT_DYNSYM:
-					ft_printf(" (DYNSYM)");
+					ft_bprintf(0, " (DYNSYM)");
 					break ;
 				case SHT_LOPROC:
-					ft_printf(" (LOPROC)");
+					ft_bprintf(0, " (LOPROC)");
 					break ;
 				case SHT_HIPROC:
-					ft_printf(" (HIPROC)");
+					ft_bprintf(0, " (HIPROC)");
 					break ;
 				case SHT_LOUSER:
-					ft_printf(" (LOUSER)");
+					ft_bprintf(0, " (LOUSER)");
 					break ;
 				case SHT_HIUSER:
-					ft_printf(" (HIUSER)");
+					ft_bprintf(0, " (HIUSER)");
 					break ;
 			}
-			ft_printf("\nSection flags = %lu\n", read_uint64(sheader->sh_flags, opt));
-			ft_printf("Section size = %lu\n", read_uint64(sheader->sh_size, opt));
-			ft_printf("Section link = %u\n", read_uint32(sheader->sh_link, opt));
-			ft_printf("Section info = %u\n", read_uint32(sheader->sh_info, opt));
-			ft_printf("Section offset = %lu\n", read_long_unsigned_int(sheader->sh_offset, opt));
-			ft_printf("Entry size = %lu\n", read_uint64(sheader->sh_entsize, opt));
+			ft_bprintf(0, "\nSection flags = %lu\n", read_uint64(sheader->sh_flags, opt));
+			ft_bprintf(0, "Section size = %lu\n", read_uint64(sheader->sh_size, opt));
+			ft_bprintf(0, "Section link = %u\n", read_uint32(sheader->sh_link, opt));
+			ft_bprintf(0, "Section info = %u\n", read_uint32(sheader->sh_info, opt));
+			ft_bprintf(0, "Section offset = %lu\n", read_long_unsigned_int(sheader->sh_offset, opt));
+			ft_bprintf(0, "Entry size = %lu\n", read_uint64(sheader->sh_entsize, opt));
 		}
 		if (ft_strstr(ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt)
 			+ read_uint32(sheader->sh_name, opt), ".gnu.lto"))
@@ -387,7 +387,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			sym_count += read_uint64(sheader->sh_size, opt) / read_uint64(sheader->sh_entsize, opt);
 			j = 0;
 			if (opt & OPT_VERBOSE)
-				ft_printf("Symbol section has %d symbols\n",
+				ft_bprintf(0, "Symbol section has %d symbols\n",
 				read_uint64(sheader->sh_size, opt) / read_uint64(sheader->sh_entsize, opt));
 			shstr = (Elf64_Shdr*)(ptr + read_long_unsigned_int(header->e_shoff, opt)
 			+ (read_uint16(header->e_shentsize, opt) * read_uint32(sheader->sh_link, opt)));
@@ -458,8 +458,8 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				}
 				if (opt & OPT_VERBOSE)
 				{
-					ft_printf("------------------------------------------------\n");
-					ft_printf("\t\tSymbol %d\n", j);
+					ft_bprintf(0, "------------------------------------------------\n");
+					ft_bprintf(0, "\t\tSymbol %d\n", j);
 				}
 				set_symbol_type(&sym, ptr, header, shstr, shstrhdr, opt);
 				if (sym.type == 'C')
@@ -481,7 +481,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 			+ read_uint32(sheader->sh_name, opt), ".gnu.lto_.symtab"))
 		{
 			if (opt & OPT_VERBOSE)
-				ft_printf("{yellow}Symbol section from -flto optimization{reset}\n");
+				ft_bprintf(0, "{yellow}Symbol section from -flto optimization{reset}\n");
 			j = 0;
 			// Let's check the section for strings
 			str = ptr + read_long_unsigned_int(sheader->sh_offset, opt);
@@ -529,7 +529,7 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 					}
 					if (opt & OPT_VERBOSE)
 					{
-						ft_printf("%s ", (str + j));
+						ft_bprintf(0, "%s ", (str + j));
 					}
 					j += ft_strlen(str + j);
 					if (!(new = ft_dlstnew(&sym, sizeof(sym))))
@@ -543,12 +543,12 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 				j++;
 			}
 			if (opt & OPT_VERBOSE)
-				ft_printf("\n");
+				ft_bprintf(0, "\n");
 		}
 		i++;
 	}
 	if (opt & OPT_PRINT_FILE_NAME)
-		ft_printf("\n%s:\n", file);
+		ft_bprintf(0, "\n%s:\n", file);
 	if (opt & OPT_BSD)
 		print_64_bsd_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
 	else if (opt & OPT_SYSV)

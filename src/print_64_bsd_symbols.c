@@ -56,215 +56,215 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		else
 			shndx_ok = 1;
 		if (opt & OPT_O)
-			ft_printf("%s:", file);
+			ft_bprintf(0, "%s:", file);
 		if (opt & OPT_SIZE_SORT)
 		{
 			//if (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION)
-			//	ft_printf("%*0x", padding, read_uint64(sheader->sh_size, opt));
+			//	ft_bprintf(0, "%*0x", padding, read_uint64(sheader->sh_size, opt));
 			//else
-				ft_printf("%*0x", padding, sym->sym.st_size);
+				ft_bprintf(0, "%*0x", padding, sym->sym.st_size);
 		}
 		else
 		{
 			if (ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 				|| ft_strstr(ptr + read_long_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-				ft_printf("%*x%0*x", padding / 2, 0xffffffff, padding / 2, sym->sym.st_value);
+				ft_bprintf(0, "%*x%0*x", padding / 2, 0xffffffff, padding / 2, sym->sym.st_value);
 			else
 			{
 				if (sym->sym.st_shndx != 0)
-					ft_printf("%0*x", padding, sym->sym.st_value);
+					ft_bprintf(0, "%0*x", padding, sym->sym.st_value);
 				else
-					ft_printf("%*s", padding, "");
+					ft_bprintf(0, "%*s", padding, "");
 			}
 			if (opt & OPT_S && sym->sym.st_size != 0)
-				ft_printf(" %*0x", padding, sym->sym.st_size);
+				ft_bprintf(0, " %*0x", padding, sym->sym.st_size);
 		}
 		if (opt & OPT_VERBOSE)
-			ft_printf(" %3d", sym->sym.st_info);
-		ft_printf(" %c", sym->type);
+			ft_bprintf(0, " %3d", sym->sym.st_info);
+		ft_bprintf(0, " %c", sym->type);
 		if (opt & OPT_D)
 		{
-			ft_printf(" ");
+			ft_bprintf(0, " ");
 			int i = 0;
 			while (sym->name[i] && sym->name[i] != '@')
 			{
-				ft_printf("%c", sym->name[i]);
+				ft_bprintf(0, "%c", sym->name[i]);
 				i++;
 			}
 		}
 		else
-			ft_printf(" %s", sym->name);
+			ft_bprintf(0, " %s", sym->name);
 		if (opt & OPT_VERBOSE)
 		{
-			ft_printf(" T =");
+			ft_bprintf(0, " T =");
 			switch (ELF64_ST_TYPE(sym->sym.st_info))
 			{
 				case STT_NOTYPE:
-					ft_printf(" NOTYPE");
+					ft_bprintf(0, " NOTYPE");
 					break ;
 				case STT_OBJECT:
-					ft_printf(" OBJECT");
+					ft_bprintf(0, " OBJECT");
 					break ;
 				case STT_FUNC:
-					ft_printf(" FUNC");
+					ft_bprintf(0, " FUNC");
 					break ;
 				case STT_SECTION:
-					ft_printf(" SECTION");
+					ft_bprintf(0, " SECTION");
 					break ;
 				case STT_FILE:
-					ft_printf(" FILE");
+					ft_bprintf(0, " FILE");
 					break ;
 				case STT_LOPROC:
-					ft_printf(" LOPROC");
+					ft_bprintf(0, " LOPROC");
 					break ;
 				case STT_HIPROC:
-					ft_printf(" HIPROC");
+					ft_bprintf(0, " HIPROC");
 					break ;
 				case STT_COMMON:
-					ft_printf(" COMMON");
+					ft_bprintf(0, " COMMON");
 					break ;
 				case STT_LOOS:
-					ft_printf(" LOOS");
+					ft_bprintf(0, " LOOS");
 					break ;
 				case STT_HIOS:
-					ft_printf(" HOS");
+					ft_bprintf(0, " HOS");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_TYPE(sym->sym.st_info));
-			ft_printf(", B =");
+			ft_bprintf(0, " (%d)", ELF64_ST_TYPE(sym->sym.st_info));
+			ft_bprintf(0, ", B =");
 			switch (ELF64_ST_BIND(sym->sym.st_info))
 			{
 				case STB_LOCAL:
-					ft_printf(" LOCAL");
+					ft_bprintf(0, " LOCAL");
 					break ;
 				case STB_GLOBAL:
-					ft_printf(" GLOBAL");
+					ft_bprintf(0, " GLOBAL");
 					break ;
 				case STB_WEAK:
-					ft_printf(" WEAK");
+					ft_bprintf(0, " WEAK");
 					break ;
 				case STB_LOPROC:
-					ft_printf(" LOPROC");
+					ft_bprintf(0, " LOPROC");
 					break ;
 				case STB_HIPROC:
-					ft_printf(" HIPROC");
+					ft_bprintf(0, " HIPROC");
 					break ;
 				case STB_LOOS:
-					ft_printf(" LOOS");
+					ft_bprintf(0, " LOOS");
 					break ;
 				case STB_HIOS:
-					ft_printf(" HIOS");
+					ft_bprintf(0, " HIOS");
 					break ;
 			}
-			ft_printf(" (%d)", ELF64_ST_BIND(sym->sym.st_info));
-			ft_printf(", O = %d", ELF64_ST_VISIBILITY(sym->sym.st_other));
-			ft_printf(", S = %d", sym->sym.st_size);
-			ft_printf(", H = %d", sym->sym.st_shndx);
+			ft_bprintf(0, " (%d)", ELF64_ST_BIND(sym->sym.st_info));
+			ft_bprintf(0, ", O = %d", ELF64_ST_VISIBILITY(sym->sym.st_other));
+			ft_bprintf(0, ", S = %d", sym->sym.st_size);
+			ft_bprintf(0, ", H = %d", sym->sym.st_shndx);
 			if (shndx_ok)
 			{
-				ft_printf(" (%s",
+				ft_bprintf(0, " (%s",
 				ptr + read_long_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
 				switch (read_uint32(sheader->sh_type, opt))
 				{
 					case SHT_NULL:
-						ft_printf(" (NULL))");
+						ft_bprintf(0, " (NULL))");
 						break ;
 					case SHT_PROGBITS:
-						ft_printf(" (PROGBITS))");
+						ft_bprintf(0, " (PROGBITS))");
 						break ;
 					case SHT_SYMTAB:
-						ft_printf(" (SYMTAB))");
+						ft_bprintf(0, " (SYMTAB))");
 						break ;
 					case SHT_STRTAB:
-						ft_printf(" (STRTAB))");
+						ft_bprintf(0, " (STRTAB))");
 						break ;
 					case SHT_RELA:
-						ft_printf(" (RELA))");
+						ft_bprintf(0, " (RELA))");
 						break ;
 					case SHT_HASH:
-						ft_printf(" (HASH))");
+						ft_bprintf(0, " (HASH))");
 						break ;
 					case SHT_DYNAMIC:
-						ft_printf(" (DYNAMIC))");
+						ft_bprintf(0, " (DYNAMIC))");
 						break ;
 					case SHT_NOTE:
-						ft_printf(" (NOTE))");
+						ft_bprintf(0, " (NOTE))");
 						break ;
 					case SHT_NOBITS:
-						ft_printf(" (NOBITS))");
+						ft_bprintf(0, " (NOBITS))");
 						break ;
 					case SHT_REL:
-						ft_printf(" (REL))");
+						ft_bprintf(0, " (REL))");
 						break ;
 					case SHT_SHLIB:
-						ft_printf(" (SHLIB))");
+						ft_bprintf(0, " (SHLIB))");
 						break ;
 					case SHT_DYNSYM:
-						ft_printf(" (DYNSYM))");
+						ft_bprintf(0, " (DYNSYM))");
 						break ;
 					case SHT_LOPROC:
-						ft_printf(" (LOPROC))");
+						ft_bprintf(0, " (LOPROC))");
 						break ;
 					case SHT_HIPROC:
-						ft_printf(" (HIPROC))");
+						ft_bprintf(0, " (HIPROC))");
 						break ;
 					case SHT_LOUSER:
-						ft_printf(" (LOUSER))");
+						ft_bprintf(0, " (LOUSER))");
 						break ;
 					case SHT_HIUSER:
-						ft_printf(" (HIUSER))");
+						ft_bprintf(0, " (HIUSER))");
 						break ;
 				}
-				ft_printf(", flags =");
+				ft_bprintf(0, ", flags =");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_WRITE)
-					ft_printf(" WRITE");
+					ft_bprintf(0, " WRITE");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_ALLOC)
-					ft_printf(" ALLOC");
+					ft_bprintf(0, " ALLOC");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_EXECINSTR)
-					ft_printf(" EXECINSTR");
+					ft_bprintf(0, " EXECINSTR");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKPROC)
-					ft_printf(" MASKPROC");
+					ft_bprintf(0, " MASKPROC");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_MERGE)
-					ft_printf(" MERGE");
+					ft_bprintf(0, " MERGE");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_STRINGS)
-					ft_printf(" STRINGS");
+					ft_bprintf(0, " STRINGS");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_INFO_LINK)
-					ft_printf(" INFO_LINK");
+					ft_bprintf(0, " INFO_LINK");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_LINK_ORDER)
-					ft_printf(" LINK_ORDER");
+					ft_bprintf(0, " LINK_ORDER");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_OS_NONCONFORMING)
-					ft_printf(" OS_NONCONFORMING");
+					ft_bprintf(0, " OS_NONCONFORMING");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_GROUP)
-					ft_printf(" GROUP");
+					ft_bprintf(0, " GROUP");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_TLS)
-					ft_printf(" TLS");
+					ft_bprintf(0, " TLS");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_MASKOS)
-					ft_printf(" MASKOS");
+					ft_bprintf(0, " MASKOS");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_MIPS_MERGE)
-					ft_printf(" MIPS_MERGE");
+					ft_bprintf(0, " MIPS_MERGE");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_ORDERED)
-					ft_printf(" ORDERED");
+					ft_bprintf(0, " ORDERED");
 				if (read_uint64(sheader->sh_flags, opt) & SHF_EXCLUDE)
-					ft_printf(" EXCLUDE");
-				ft_printf(" (%d)", read_uint64(sheader->sh_flags, opt));
+					ft_bprintf(0, " EXCLUDE");
+				ft_bprintf(0, " (%d)", read_uint64(sheader->sh_flags, opt));
 			}
 			else
 			{
 				switch (sym->sym.st_shndx)
 				{
 					case SHN_UNDEF:
-					ft_printf(" (UNDEF)");
+					ft_bprintf(0, " (UNDEF)");
 						break ;
 					case SHN_ABS:
-						ft_printf(" (ABS)");
+						ft_bprintf(0, " (ABS)");
 						break ;
 					case SHN_COMMON:
-						ft_printf(" (COMMON)");
+						ft_bprintf(0, " (COMMON)");
 						break ;
 				}
 			}
 		}
-		ft_printf("\n");
+		ft_bprintf(0, "\n");
 		lst = lst->next;
 	}
 }

@@ -226,7 +226,7 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 		/*while (ignore_char(*s1))
 		{
 		//	if (ft_strequ(str1, "runtime/cgo(.text)") && ft_strequ(str2, "runtime/cgo(.text)"))
-		//		ft_printf("Ignoring %c in s1:\"%s\" (\"%s\")\n", *s1, str1, s1);
+		//		ft_bprintf(0, "Ignoring %c in s1:\"%s\" (\"%s\")\n", *s1, str1, s1);
 			s1++;
 			//if (s1_first_real_char == 0)
 				s1_ignored++;
@@ -235,7 +235,7 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 		while (ignore_char(*s2))
 		{
 		//	if (ft_strequ(str1, "runtime/cgo(.text)") && ft_strequ(str2, "runtime/cgo(.text)"))
-		//		ft_printf("Ignoring %c in s2:\"%s\" (\"%s\")\n", *s2, str2, s2);
+		//		ft_bprintf(0, "Ignoring %c in s2:\"%s\" (\"%s\")\n", *s2, str2, s2);
 			s2++;
 			//if (s2_first_real_char == 0)
 				s2_ignored++;
@@ -251,20 +251,20 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 			if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
 			|| (ft_strstr(str1, "(*FileAction_Rm).Size") && ft_strstr(str2, "(*FileActionRm).Size")))
 			{
-				ft_printf("COUCOU1\n");
-				ft_printf("str1 = %s\n", str1);
-				ft_printf("str2 = %s\n", str2);
-				ft_printf("Ignored = %d\n", ignored);
-				ft_printf("Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
+				ft_bprintf(0, "COUCOU1\n");
+				ft_bprintf(0, "str1 = %s\n", str1);
+				ft_bprintf(0, "str2 = %s\n", str2);
+				ft_bprintf(0, "Ignored = %d\n", ignored);
+				ft_bprintf(0, "Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
 			}
 			if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
 			|| (ft_strstr(str1, "(*FileAction_Rm).Size") && ft_strstr(str2, "(*FileActionRm).Size")))
 			{
-				ft_printf("COUCOU1\n");
-				ft_printf("str1 = %s\n", str1);
-				ft_printf("str2 = %s\n", str2);
-				ft_printf("Ignored = %d\n", ignored);
-				ft_printf("Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
+				ft_bprintf(0, "COUCOU1\n");
+				ft_bprintf(0, "str1 = %s\n", str1);
+				ft_bprintf(0, "str2 = %s\n", str2);
+				ft_bprintf(0, "Ignored = %d\n", ignored);
+				ft_bprintf(0, "Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
 			}
 			int value = 0;
 			while (ignore_char(*s1))
@@ -280,20 +280,20 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 			if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
 			|| (ft_strstr(str1, "(*FileAction_Rm).Size") && ft_strstr(str2, "(*FileActionRm).Size")))
 			{
-				ft_printf("COUCOU2\n");
-				ft_printf("str1 = %s\n", str1);
-				ft_printf("str2 = %s\n", str2);
-				ft_printf("Ignored = %d\n", ignored);
-				ft_printf("Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
+				ft_bprintf(0, "COUCOU2\n");
+				ft_bprintf(0, "str1 = %s\n", str1);
+				ft_bprintf(0, "str2 = %s\n", str2);
+				ft_bprintf(0, "Ignored = %d\n", ignored);
+				ft_bprintf(0, "Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
 			}
 			if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
 			|| (ft_strstr(str1, "(*FileAction_Rm).Size") && ft_strstr(str2, "(*FileActionRm).Size")))
 			{
-				ft_printf("COUCOU2\n");
-				ft_printf("str1 = %s\n", str1);
-				ft_printf("str2 = %s\n", str2);
-				ft_printf("Ignored = %d\n", ignored);
-				ft_printf("Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
+				ft_bprintf(0, "COUCOU2\n");
+				ft_bprintf(0, "str1 = %s\n", str1);
+				ft_bprintf(0, "str2 = %s\n", str2);
+				ft_bprintf(0, "Ignored = %d\n", ignored);
+				ft_bprintf(0, "Comparing '%c' (%d) with '%c' (%d)\n", *s1, *s1, *s2, *s2);
 			}
 			int value = 0;
 			while (ignore_char(*s2))
@@ -305,7 +305,7 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 				ignored = value - ft_tolower(*s1);
 		}
 		//if (ft_strequ(str1, "runtime/cgo(.text)") && ft_strequ(str2, "runtime/cgo(.text)"))
-		//	ft_printf("After ignored, s1 = \"%s\", s2 = \"%s\"\n", s1, s2);
+		//	ft_bprintf(0, "After ignored, s1 = \"%s\", s2 = \"%s\"\n", s1, s2);
 		// The string with the less ignored chars comes first
 		//if (s1_ignored > s2_ignored && ignored == 0)
 		//	ignored = 2;
@@ -325,11 +325,11 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 			/*if ((ft_strequ(str1, "freeaddrinfo@@GLIBC_2.2.5") && ft_strequ(str2, "free@@GLIBC_2.2.5"))
 			|| (ft_strequ(str2, "freeaddrinfo@@GLIBC_2.2.5") && ft_strequ(str1, "free@@GLIBC_2.2.5")))
 			{
-				ft_printf("COUCOU\n");
-				ft_printf("s1 = %s\n", s1);
-				ft_printf("s2 = %s\n", s2);
-				ft_printf("str1 = %s\n", str1);
-				ft_printf("str2 = %s\n", str2);
+				ft_bprintf(0, "COUCOU\n");
+				ft_bprintf(0, "s1 = %s\n", s1);
+				ft_bprintf(0, "s2 = %s\n", s2);
+				ft_bprintf(0, "str1 = %s\n", str1);
+				ft_bprintf(0, "str2 = %s\n", str2);
 			}*/
 			return (ft_tolower(*s1) - ft_tolower(*s2));
 		}
@@ -346,18 +346,18 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 		|| ft_strequ(str2, "github.com/docker/cli/vendor/golang.org/x/crypto/curve25519.basePoint"))
 			//|| (ft_strequ(str1, "runtime.GC") && ft_strequ(str2, "runtime._GC")))
 		{
-			ft_printf("Case diff\n");
-			ft_printf("str1 = %s\n", str1);
-			ft_printf("str2 = %s\n", str2);
-			ft_printf("case = %d\n", case_diff);
+			ft_bprintf(0, "Case diff\n");
+			ft_bprintf(0, "str1 = %s\n", str1);
+			ft_bprintf(0, "str2 = %s\n", str2);
+			ft_bprintf(0, "case = %d\n", case_diff);
 		}*/
 		//if (ignored == 0)
-		//	ft_printf("\"%s\" and \"%s\" are equal except from case. diff = %d\n", str1, str2, case_diff);
+		//	ft_bprintf(0, "\"%s\" and \"%s\" are equal except from case. diff = %d\n", str1, str2, case_diff);
 		//if ((ft_strequ(str1, "time.Time.date") && ft_strequ(str2, "time.Time.Date"))
 		//|| (ft_strequ(str1, "time.Time.Date") && ft_strequ(str2, "time.Time.date")))
 		if ((ft_strequ(str1, "time.Time.UTC.stkobj") && ft_strequ(str2, "time.(*Time).UTC.stkobj"))
 		|| (ft_strequ(str1, "time.(*Time).UTC.stkobj") && ft_strequ(str2, "time.Time.UTC.stkobj")))
-			ft_printf("Case diff\n");
+			ft_bprintf(0, "Case diff\n");
 		if (case_diff == 1)
 			return (1);
 		else if (case_diff == 2)
@@ -370,25 +370,25 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 		|| ft_strequ(str2, "github.com/docker/cli/vendor/golang.org/x/crypto/curve25519.basePoint"))
 			//|| (ft_strequ(str1, "runtime.GC") && ft_strequ(str2, "runtime._GC")))
 		{
-			ft_printf("Ingored diff\n");
-			ft_printf("str1 = %s\n", str1);
-			ft_printf("str2 = %s\n", str2);
-			ft_printf("ignored = %d\n", ignored);
+			ft_bprintf(0, "Ingored diff\n");
+			ft_bprintf(0, "str1 = %s\n", str1);
+			ft_bprintf(0, "str2 = %s\n", str2);
+			ft_bprintf(0, "ignored = %d\n", ignored);
 		}*/
 		//if (ft_strequ(str1, "free@@GLIBC_2.2.5")
 		//|| ft_strequ(str1, "free@@GLIBC_2.2.5"))
-		//	ft_printf("Ignored diff\n");
+		//	ft_bprintf(0, "Ignored diff\n");
 		//if (sym1->sym.st_value != sym2->sym.st_value)
 		//	return (sym1->sym.st_value > sym2->sym.st_value);
 		//if (ft_strequ(str1, "time.Time.date") && ft_strequ(str2, "time.Time.date"))
-		//	ft_printf("Ignored diff = %d\n", ignored);
+		//	ft_bprintf(0, "Ignored diff = %d\n", ignored);
 		if ((ft_strstr(str1, "(*FileActionRm).Size") && ft_strstr(str2, "(*FileAction_Rm).Size"))
 			|| (ft_strstr(str1, "(*FileAction_Rm).Size") && ft_strstr(str2, "(*FileActionRm).Size")))
 		{
-			ft_printf("Ingored diff\n");
-			ft_printf("str1 = %s\n", str1);
-			ft_printf("str2 = %s\n", str2);
-			ft_printf("ignored = %d\n", ignored);
+			ft_bprintf(0, "Ingored diff\n");
+			ft_bprintf(0, "str1 = %s\n", str1);
+			ft_bprintf(0, "str2 = %s\n", str2);
+			ft_bprintf(0, "ignored = %d\n", ignored);
 		}
 		//if (ignored < 0)
 		//	return (1);
@@ -400,18 +400,18 @@ int		compare_names_no_special(void *ptr1, void *ptr2)
 	//if (ELF64_ST_TYPE(sym1->sym.st_info) != ELF64_ST_TYPE(sym2->sym.st_info))
 //		return (ELF64_ST_TYPE(sym1->sym.st_info) < ELF64_ST_TYPE(sym2->sym.st_info));
 	//if (ft_strequ(str1, "runtime/cgo(.text)") && ft_strequ(str2, "runtime/cgo(.text)"))
-	//	ft_printf("COUCOU\n");
+	//	ft_bprintf(0, "COUCOU\n");
 	// Last comparison is between the addresses
 	// For some reason, it's inversed when symbol is in the bss section
 	//if (ft_strequ(str1, "free@@GLIBC_2.2.5")
 	//|| ft_strequ(str1, "free@@GLIBC_2.2.5"))
-	//	ft_printf("No diff\n");
+	//	ft_bprintf(0, "No diff\n");
 	if (sym1->sym.st_info != sym2->sym.st_info)
 		return (sym1->sym.st_info > sym2->sym.st_info);
 	if (sym1->sym.st_value != sym2->sym.st_value)
 	{
 		//if (ft_strequ(str1, "time.Time.date") && ft_strequ(str2, "time.Time.date"))
-		//	ft_printf("Address diff\n");
+		//	ft_bprintf(0, "Address diff\n");
 		if (sym1->type == 'b')
 			return (sym1->sym.st_value < sym2->sym.st_value);
 		return (sym1->sym.st_value > sym2->sym.st_value);

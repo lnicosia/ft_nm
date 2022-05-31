@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OPT=""
+OPT="$@"
 
 ./ft_nm $OPT > ft_nm.txt
 echo "$?" > ft_nm-ret.txt

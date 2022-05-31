@@ -42,35 +42,35 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			continue ;
 		}
 		if (opt & OPT_O)
-			ft_printf("%s: ", file);
+			ft_bprintf(0, "%s: ", file);
 		if (opt & OPT_D)
 		{
-			ft_printf(" ");
+			ft_bprintf(0, " ");
 			int i = 0;
 			while (sym->name[i] && sym->name[i] != '@')
 			{
-				ft_printf("%c", sym->name[i]);
+				ft_bprintf(0, "%c", sym->name[i]);
 				i++;
 			}
 		}
 		else
-			ft_printf("%s", sym->name);
-		ft_printf(" %c", sym->type);
+			ft_bprintf(0, "%s", sym->name);
+		ft_bprintf(0, " %c", sym->type);
 		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 			|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf(" %0*x", padding / 2, sym->sym.st_value);
+			ft_bprintf(0, " %0*x", padding / 2, sym->sym.st_value);
 		else
 		{
 			if (sym->sym.st_shndx != 0)
-				ft_printf(" %0*x", padding, sym->sym.st_value);
+				ft_bprintf(0, " %0*x", padding, sym->sym.st_value);
 			else
-				ft_printf(" %8s", "");
+				ft_bprintf(0, " %8s", "");
 		}
 		if (sym->sym.st_size && sym->sym.st_shndx != 0)
-			ft_printf(" %0*x", padding, sym->sym.st_size);
+			ft_bprintf(0, " %0*x", padding, sym->sym.st_size);
 		else if (sym->sym.st_shndx != 0)
-			ft_printf(" ");
-		ft_printf("\n");
+			ft_bprintf(0, " ");
+		ft_bprintf(0, "\n");
 		lst = lst->next;
 	}
 }

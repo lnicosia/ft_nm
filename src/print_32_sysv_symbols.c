@@ -27,13 +27,13 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 	padding = 8;
 	while (lst && lst->prev)
 		lst = lst->prev;
-	ft_printf("\n\n");
+	ft_bprintf(0, "\n\n");
 	if (opt & OPT_U)
-		ft_printf("Undefined s");
+		ft_bprintf(0, "Undefined s");
 	else
-		ft_printf("S");
-	ft_printf("ymbols from %s:\n\n", file);
-	ft_printf("%-22s%-*s%-13s%-13s%-*s%-6s%s\n\n", "Name", padding, "Value", "Class", "Type",
+		ft_bprintf(0, "S");
+	ft_bprintf(0, "ymbols from %s:\n\n", file);
+	ft_bprintf(0, "%-22s%-*s%-13s%-13s%-*s%-6s%s\n\n", "Name", padding, "Value", "Class", "Type",
 			padding + 1, "Size", "Line", "Section");
 	while (lst)
 	{
@@ -56,30 +56,30 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 		Elf32_Shdr	*sheader = (Elf32_Shdr*) (ptr + read_unsigned_int(header->e_shoff, opt)
 				+ (read_uint16(header->e_shentsize, opt) * sym->sym.st_shndx));
 		if (opt & OPT_O)
-			ft_printf("%s:", file);
+			ft_bprintf(0, "%s:", file);
 		if (opt & OPT_D)
 		{
 			int i = 0;
 			while (sym->name[i] && sym->name[i] != '@')
 			{
-				ft_printf("%c", sym->name[i]);
+				ft_bprintf(0, "%c", sym->name[i]);
 				i++;
 			}
-			ft_printf("%-*d", 20 - i); 
+			ft_bprintf(0, "%-*d", 20 - i); 
 		}
 		else
-			ft_printf("%-20s", sym->name);
+			ft_bprintf(0, "%-20s", sym->name);
 		if (ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vclock_page")
 				|| ft_strstr(ptr + read_unsigned_int(shstr->sh_offset, opt) + read_uint32(sym->sym.st_name, opt), "vvar_"))
-			ft_printf("|%0*x|", padding / 2, sym->sym.st_value);
+			ft_bprintf(0, "|%0*x|", padding / 2, sym->sym.st_value);
 		else
 		{
 			if (sym->sym.st_shndx != 0)
-				ft_printf("|%0*x|", padding, sym->sym.st_value);
+				ft_bprintf(0, "|%0*x|", padding, sym->sym.st_value);
 			else
-				ft_printf("|%*s|", padding, "");
+				ft_bprintf(0, "|%*s|", padding, "");
 		}
-		ft_printf("   %c  ", sym->type);
+		ft_bprintf(0, "   %c  ", sym->type);
 		char	*type = NULL;
 		switch (ELF32_ST_TYPE(sym->sym.st_info))
 		{
@@ -121,18 +121,18 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 				break ;
 		}
 		if (ELF32_ST_TYPE(sym->sym.st_info) != STT_SECTION)
-			ft_printf("|%18s|", type);
+			ft_bprintf(0, "|%18s|", type);
 		else
-			ft_printf("|%18s|", "");
+			ft_bprintf(0, "|%18s|", "");
 		if (sym->sym.st_size)
-			ft_printf("%0*x|", padding, sym->sym.st_size);
+			ft_bprintf(0, "%0*x|", padding, sym->sym.st_size);
 		else
-			ft_printf("%*s|", padding, "");
-		ft_printf("     |");
+			ft_bprintf(0, "%*s|", padding, "");
+		ft_bprintf(0, "     |");
 		if (shndx_ok && !(opt & OPT_LTO))
 		{
 			if (ELF32_ST_TYPE(sym->sym.st_info) != STT_SECTION)
-				ft_printf("%s", ptr
+				ft_bprintf(0, "%s", ptr
 				+ read_unsigned_int(shstrhdr->sh_offset, opt)
 				+ read_uint32(sheader->sh_name, opt));
 		}
@@ -141,20 +141,20 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 			switch (sym->sym.st_shndx)
 			{
 				case SHN_UNDEF:
-					ft_printf("*UND*");
+					ft_bprintf(0, "*UND*");
 					break ;
 				case SHN_ABS:
-					ft_printf("*ABS*");
+					ft_bprintf(0, "*ABS*");
 					break ;
 				case SHN_COMMON:
-					ft_printf("*COM*");
+					ft_bprintf(0, "*COM*");
 					break ;
 				default:
-					ft_printf("???");
+					ft_bprintf(0, "???");
 					break;
 			}
 		}
-		ft_printf("\n");
+		ft_bprintf(0, "\n");
 		lst = lst->next;
 	}
 }

@@ -29,13 +29,13 @@ int		parse_file(char *ptr, char *file, t_stat stats, int opt)
 		if (ptr[4] == ELFCLASS64)
 		{
 			if (opt & OPT_VERBOSE)
-				ft_printf("64-bits binary\n");
+				ft_bprintf(0, "64-bits binary\n");
 			handle_64(file, ptr, stats.st_size, opt);
 		}
 		else if (ptr[4] == ELFCLASS32)
 		{
 			if (opt & OPT_VERBOSE)
-				ft_printf("32-bits binary\n");
+				ft_bprintf(0, "32-bits binary\n");
 			handle_32(file, ptr, stats.st_size, opt);
 		}
 		else if (ptr[4] == ELFCLASSNONE)
@@ -73,7 +73,7 @@ int		analyze_file(int fd, char *file, int opt)
 	else if (!S_ISREG(stats.st_mode))
 		return (custom_error("ft_nm: Warning: '%s' is not an ordinary file\n", file));
 	if (opt & OPT_VERBOSE)
-		ft_printf("File size = %d\n", stats.st_size);
+		ft_bprintf(0, "File size = %d\n", stats.st_size);
 	if (stats.st_size == 0)
 		return (-1);
 	if ((unsigned int)stats.st_size <= 3)
@@ -130,5 +130,6 @@ int		ft_nm(int ac, char **av)
 		if (open_file("a.out", opt))
 			return (1);
 	}
+	ft_bprintf(1, "");
 	return (ret);
 }
