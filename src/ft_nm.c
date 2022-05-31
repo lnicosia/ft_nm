@@ -50,15 +50,16 @@ int		parse_file(char *ptr, char *file, t_stat stats, int opt)
 
 int		map_file(char *file, int fd, t_stat stats, int opt)
 {
-	char				*ptr;
+	char	*ptr;
+	int		ret;
 
 	if ((ptr = (char *)mmap(0, (size_t)stats.st_size,
 		PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 		return (custom_error("ft_nm: mmap error"));
-	parse_file(ptr, file, stats, opt);
+	ret = parse_file(ptr, file, stats, opt);
 	if (munmap(ptr, (size_t)stats.st_size))
 		return (custom_error("ft_nm: munmap error"));
-	return (0);
+	return (ret);
 }
 
 int		analyze_file(int fd, char *file, int opt)
@@ -71,13 +72,14 @@ int		analyze_file(int fd, char *file, int opt)
 		return (custom_error("ft_nm: Warning: '%s' is a directory\n", file));
 	else if (!S_ISREG(stats.st_mode))
 		return (custom_error("ft_nm: Warning: '%s' is not an ordinary file\n", file));
-	if (stats.st_size == 0)
-		return (custom_error("ft_nm: '%s' is empty\n", file));
-	if ((unsigned int)stats.st_size <= 3)
-		return (custom_error("ft_nm: %s: File truncated\n", file));
 	if (opt & OPT_VERBOSE)
 		ft_printf("File size = %d\n", stats.st_size);
-	map_file(file, fd, stats, opt);
+	if (stats.st_size == 0)
+		return (-1);
+	if ((unsigned int)stats.st_size <= 3)
+		return (custom_error("ft_nm: %s: File truncated\n", file));
+	if (map_file(file, fd, stats, opt))
+		return (-1);
 	return (0);
 }
 
@@ -88,7 +90,8 @@ int		open_file(char *file, int opt)
 	fd = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
 		return (custom_error("ft_nm: '%s': Open error\n", file));
-	analyze_file(fd, file, opt);
+	if (analyze_file(fd, file, opt))
+		return (-1);
 	if (close(fd))
 		return (custom_error("ft_nm: Close error\n"));
 	return (0);
