@@ -34,6 +34,7 @@ int		print_usage_stdin(void)
 	ft_bprintf(0, "  -e\t\t\t(ignored)\n");
 	ft_bprintf(0, "      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	ft_bprintf(0, "\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
+	ft_bprintf(0, "  -g, --extern-only\tDisplay only external symbols\n");
 	ft_bprintf(0, "  -n, --numeric-sort\tSort symbols numerically by address\n");
 	ft_bprintf(0, "  -o\t\t\tSame as -A\n");
 	ft_bprintf(0, "  -p, --no-sort\t\tDo no sort the symbols\n");
@@ -64,6 +65,7 @@ int		print_usage(void)
 	custom_error("  -e\t\t\t(ignored)\n");
 	custom_error("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	custom_error("\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
+	custom_error("  -g, --extern-only\tDisplay only external symbols\n");
 	custom_error("  -n, --numeric-sort\tSort symbols numerically by address\n");
 	custom_error("  -o\t\t\tSame as -A\n");
 	custom_error("  -p, --no-sort\t\tDo no sort the symbols\n");
@@ -117,10 +119,14 @@ int		check_opt(char *av, int *opt)
 		*opt |= OPT_POSIX;
 	else if (*av == 'o' || *av == 'A')
 		*opt |= OPT_O;
+	else if (*av == 'g')
+		*opt |= OPT_G;
 	else if (*av == 'h')
 		return (print_usage_stdin());
 	else if (*av == 'V')
 		return (print_version());
+	else if (*av == 'g')
+		*opt |= OPT_G;
 	else if (*av != 'e')
 	{
 		custom_error("ft_nm: invalid option -- '%s'\n", av);
@@ -166,6 +172,8 @@ int		parse_option_line(char *av, int *opt)
 			*opt |= OPT_R;
 		else if (ft_strnequ(av, "--print-size", ft_strlen(av)))
 			*opt |= OPT_S;
+		else if (ft_strnequ(av, "--external-only", ft_strlen(av)))
+			*opt |= OPT_G;
 		else if (ft_strnequ(av, "--size-sort", ft_strlen(av)))
 		{
 			*opt |= OPT_SIZE_SORT;

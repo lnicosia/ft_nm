@@ -32,5 +32,6 @@
 # define OPT_R (1 << 16)
 # define OPT_SIZE_SORT (1 << 17)
 # define OPT_N (1 << 18)
+# define OPT_G (1 << 19)
 
 #endif

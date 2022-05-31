@@ -110,7 +110,10 @@ int		ft_nm(int ac, char **av)
 	if (ret == 1)
 		return (1);
 	else if (ret == 2)
+	{
+		ft_bprintf(1, "");
 		return (0);
+	}
 	if (!(opt & OPT_POSIX) && !(opt & OPT_SYSV))
 		opt |= OPT_BSD;
 	if (nb_files > 1 && !(opt & OPT_O))
