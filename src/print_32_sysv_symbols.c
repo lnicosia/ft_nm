@@ -43,9 +43,12 @@ void	print_32_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf32_Ehdr *head
 				&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
 			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v')
-			|| (opt & OPT_G && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+			|| (opt & OPT_G && ((sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v' && sym->type != 'T' && sym->type != 'W'
-				&& sym->type != 'B' && sym->type != 'D' && sym->type != 'R')
+				&& sym->type != 'B' && sym->type != 'D' && sym->type != 'R'
+				&& sym->type != 'A' && sym->type != 'V' && sym->type != 'i'
+				&& sym->type != 'C')
+				|| (sym->type == 'i' && ELF64_ST_BIND(sym->sym.st_info) == STB_LOCAL)))
 			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;
