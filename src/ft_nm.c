@@ -116,7 +116,7 @@ int		ft_nm(int ac, char **av)
 	}
 	if (!(opt & OPT_POSIX) && !(opt & OPT_SYSV))
 		opt |= OPT_BSD;
-	if (nb_files > 1 && !(opt & OPT_O))
+	if (nb_files > 1 && !(opt & OPT_O) && !(opt & OPT_SYSV))
 		opt |= OPT_PRINT_FILE_NAME;
 	i = 1;
 	while (i < ac)

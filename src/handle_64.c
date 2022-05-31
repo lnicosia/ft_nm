@@ -548,7 +548,11 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 		i++;
 	}
 	if (opt & OPT_PRINT_FILE_NAME)
-		ft_bprintf(0, "\n%s:\n", file);
+	{
+		if (!(opt & OPT_POSIX))
+			ft_bprintf(0, "\n");
+		ft_bprintf(0, "%s:\n", file);
+	}
 	if (opt & OPT_BSD)
 		print_64_bsd_symbols(lst, file, ptr, header, shstr, shstrhdr, opt);
 	else if (opt & OPT_SYSV)

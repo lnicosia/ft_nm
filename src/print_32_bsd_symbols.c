@@ -35,6 +35,9 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
 			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v')
+			|| (opt & OPT_G && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+				&& sym->type != 'v' && sym->type != 'T' && sym->type != 'W'
+				&& sym->type != 'B' && sym->type != 'D' && sym->type != 'R')
 			|| (opt & OPT_SIZE_SORT && (sym->sym.st_size == 0 || sym->type == 'U')))
 		{
 			lst = lst->next;

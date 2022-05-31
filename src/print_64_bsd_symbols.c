@@ -38,6 +38,9 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 		if ((opt & OPT_D && sym->sym.st_shndx != 0)
 			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v')
+			|| (opt & OPT_G && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+				&& sym->type != 'v' && sym->type != 'T' && sym->type != 'W'
+				&& sym->type != 'B' && sym->type != 'D' && sym->type != 'R')
 			|| (opt & OPT_SIZE_SORT &&
 				((ELF64_ST_TYPE(sym->sym.st_info) != STT_SECTION && sym->sym.st_size == 0)
 				|| (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION
