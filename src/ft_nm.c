@@ -89,7 +89,10 @@ int		open_file(char *file, int opt)
 
 	fd = 0;
 	if ((fd = open(file, O_RDONLY)) == -1)
+	{
+		ft_bprintf(1, "");
 		return (custom_error("ft_nm: '%s': Open error\n", file));
+	}
 	if (analyze_file(fd, file, opt))
 		return (-1);
 	if (close(fd))
@@ -118,13 +121,14 @@ int		ft_nm(int ac, char **av)
 		opt |= OPT_BSD;
 	if (nb_files > 1 && !(opt & OPT_O) && !(opt & OPT_SYSV))
 		opt |= OPT_PRINT_FILE_NAME;
+	ret = 0;
 	i = 1;
 	while (i < ac)
 	{
 		if (!is_arg_an_option_line(av[i]))
 		{
-			if (open_file(av[i], opt) != 0)
-				ret = 1;
+				if (open_file(av[i], opt))
+			ret++;
 		}
 		i++;
 	}
