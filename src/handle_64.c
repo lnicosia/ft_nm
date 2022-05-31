@@ -451,6 +451,8 @@ void	handle_64(char *file, char *ptr, long int file_size, int opt)
 					ft_dlstdelfront(&lst, delsym);
 					return ;
 				}
+				if (ft_strequ(sym.name, ".eh_frame"))
+					sym.sym.st_size -= 4;
 				if (opt & OPT_LTO && search_for_duplicates(lst, sym.name))
 				{
 					j++;

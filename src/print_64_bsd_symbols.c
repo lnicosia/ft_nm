@@ -47,8 +47,21 @@ Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt)
 			|| (opt & OPT_SIZE_SORT &&
 				((ELF64_ST_TYPE(sym->sym.st_info) != STT_SECTION && sym->sym.st_size == 0)
 				|| (ELF64_ST_TYPE(sym->sym.st_info) == STT_SECTION
-					&& (read_uint64(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_WRITE)
-					|| read_uint64(sheader->sh_flags, opt) == (SHF_ALLOC | SHF_EXECINSTR)
+					&& !(
+					ft_strequ(sym->name, ".plt.got")
+					|| ft_strequ(sym->name, ".plt")
+					|| ft_strequ(sym->name, ".gnu.hash")
+					|| ft_strequ(sym->name, ".interp")
+					|| ft_strequ(sym->name, ".note.ABI-tag")
+					|| ft_strequ(sym->name, ".note.gnu.build-id")
+					|| ft_strequ(sym->name, ".gnu.version")
+					|| ft_strequ(sym->name, ".gnu.version_r")
+					|| ft_strequ(sym->name, ".comment")
+					|| ft_strequ(sym->name, ".dynstr")
+					|| ft_strequ(sym->name, ".dynsym")
+					|| ft_strequ(sym->name, ".rela.dyn")
+					|| ft_strequ(sym->name, ".rela.plt")
+					|| ft_strequ(sym->name, ".eh_frame")
 					))
 				|| sym->type == 'U')))
 		//	&& ELF64_ST_BIND(sym->sym.st_info) != STB_GLOBAL
