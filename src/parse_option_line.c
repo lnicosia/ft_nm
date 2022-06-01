@@ -38,7 +38,7 @@ int		print_usage_stdin(void)
 	ft_bprintf(0, "  -P, --portability\tSame as --format=posix\n");
 	ft_bprintf(0, "  -r, --reverse-sort\tReverse the sense of the sort\n");
 	ft_bprintf(0, "  -S, --print-size\tPrint size of defined symbols\n");
-	ft_bprintf(0, "      --size-sort\tSort symbols by size\n");
+//	ft_bprintf(0, "      --size-sort\tSort symbols by size\n");
 	ft_bprintf(0, "  -u, --undefined-only\tDisplay only undefined symbols\n");
 	ft_bprintf(0, "  -h, --help\t\tDisplay this information\n");
 	ft_bprintf(0, "      --verbose\t\tDisplay additional information about the symbols\n");
@@ -66,7 +66,7 @@ int		print_usage(void)
 	custom_error("  -P, --portability\tSame as --format=posix\n");
 	custom_error("  -r, --reverse-sort\tReverse the sense of the sort\n");
 	custom_error("  -S, --print-size\tPrint size of defined symbols\n");
-	custom_error("      --size-sort\tSort symbols by size\n");
+//	custom_error("      --size-sort\tSort symbols by size\n");
 	custom_error("  -u, --undefined-only\tDisplay only undefined symbols\n");
 	custom_error("  -h, --help\t\tDisplay this information\n");
 	custom_error("      --verbose\t\tDisplay additional information about the symbols\n");
@@ -162,12 +162,12 @@ int		parse_option_line(char *av, int *opt)
 			*opt |= OPT_S;
 		else if (ft_strnequ(av, "--external-only", ft_strlen(av)))
 			*opt |= OPT_G;
-		else if (ft_strnequ(av, "--size-sort", ft_strlen(av)))
+		/*else if (ft_strnequ(av, "--size-sort", ft_strlen(av)))
 		{
 			*opt |= OPT_SIZE_SORT;
 			*opt &= ~OPT_N;
 			*opt &= ~OPT_P;
-		}
+		}*/
 		else if (ft_strnequ(av, "--undefined-only", ft_strlen(av)))
 			*opt |= OPT_U;
 		else if (ft_strnequ(av, "--help", ft_strlen(av)))
