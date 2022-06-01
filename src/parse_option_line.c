@@ -29,9 +29,6 @@ int		print_usage_stdin(void)
 	ft_bprintf(0, "  -a, --debug-syms\tDisplay debugger-only symbols\n");
 	ft_bprintf(0, "  -A, --print-file-name\tPrint name of the input file before every symbol\n");
 	ft_bprintf(0, "  -B\t\t\tSame as --format=bsd\n");
-	//ft_bprintf(0, "  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
-	ft_bprintf(0, "      --defined-only\tDisplay only defined symbols\n");
-	ft_bprintf(0, "  -e\t\t\t(ignored)\n");
 	ft_bprintf(0, "      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	ft_bprintf(0, "\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
 	ft_bprintf(0, "  -g, --extern-only\tDisplay only external symbols\n");
@@ -60,9 +57,6 @@ int		print_usage(void)
 	custom_error("  -a, --debug-syms\tDisplay debugger-only symbols\n");
 	custom_error("  -A, --print-file-name\tPrint name of the input file before every symbol\n");
 	custom_error("  -B\t\t\tSame as --format=bsd\n");
-	//custom_error("  -D, --dynamic\t\tDisplay dynamic symbols instead of normal symbols\n");
-	custom_error("      --defined-only\tDisplay only defined symbols\n");
-	custom_error("  -e\t\t\t(ignored)\n");
 	custom_error("      --format=FORMAT\tUse the output format FORMAT. Format cat be `bsd`,\n");
 	custom_error("\t\t\t  `sysv' or `posix'. The default is `bsd'\n");
 	custom_error("  -g, --extern-only\tDisplay only external symbols\n");
@@ -97,8 +91,6 @@ int		check_opt(char *av, int *opt)
 		*opt |= OPT_S;
 	else if (*av == 'u')
 		*opt |= OPT_U;
-//	else if (*av == 'D')
-//		*opt |= OPT_D;
 	else if (*av == 'r')
 		*opt |= OPT_R;
 	else if (*av == 'n')
@@ -147,10 +139,6 @@ int		parse_option_line(char *av, int *opt)
 			*opt |= OPT_A;
 		else if (ft_strnequ(av, "--print-file-name", ft_strlen(av)))
 			*opt |= OPT_O;
-		//else if (ft_strnequ(av, "--dynamic", ft_strlen(av)))
-		//	*opt |= OPT_D;
-		else if (ft_strnequ(av, "--defined-only", ft_strlen(av)))
-			*opt |= OPT_DE;
 		else if (ft_strbegin(av, "--format="))
 		{
 			if (ft_strbegin(av, "--format=b"))
