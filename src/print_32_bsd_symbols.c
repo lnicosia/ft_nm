@@ -33,7 +33,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 		if ((opt & OPT_D
 			&& ELF32_ST_BIND(sym->sym.st_info) != STB_GLOBAL
 			&& ELF32_ST_BIND(sym->sym.st_info) != STB_WEAK)
-			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+			|| (opt & OPT_U && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v')
 			|| (opt & OPT_G && ((sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v' && sym->type != 'T' && sym->type != 'W'

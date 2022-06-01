@@ -42,7 +42,7 @@ void	print_64_sysv_symbols(t_dlist *lst, char *file, char *ptr, Elf64_Ehdr *head
 	{
 		sym = (t_sym64*)lst->content;
 		if ((opt & OPT_D && sym->sym.st_shndx != 0)
-			|| (opt & OPT_U && sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
+			|| (opt & OPT_U && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v')
 			|| (opt & OPT_G && ((sym->type != 'u' && sym->type != 'U' && sym->type != 'w'
 				&& sym->type != 'v' && sym->type != 'T' && sym->type != 'W'
