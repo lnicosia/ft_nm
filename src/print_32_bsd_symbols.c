@@ -68,7 +68,7 @@ Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt)
 				else
 					ft_bprintf(0, "%*s", padding, "");
 			}
-			if (opt & OPT_S && sym->sym.st_size != 0)
+			if (opt & OPT_S && sym->sym.st_size != 0 && sym->type != 'U')
 				ft_bprintf(0, " %*0x", padding, sym->sym.st_size);
 		}
 		if (opt & OPT_VERBOSE)
