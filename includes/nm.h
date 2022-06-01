@@ -90,4 +90,10 @@ Elf64_Ehdr *header, Elf64_Shdr *shstr, Elf64_Shdr *shstrhdr, int opt);
 void	print_32_posix_symbols(t_dlist *lst, char *file, char *ptr,
 Elf32_Ehdr *header, Elf32_Shdr *shstr, Elf32_Shdr *shstrhdr, int opt);
 
+
+//	Print helpers
+void	print_elf_type(uint16_t type);
+void	print_arch(uint16_t machine);
+void	print_section_type(uint32_t type);
+
 #endif

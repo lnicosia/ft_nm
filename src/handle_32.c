@@ -237,26 +237,17 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 	shstr = NULL;
 	header = (Elf32_Ehdr*) ptr;
 	compare = set_compare_func(32, opt);
+	uint16_t machine = read_uint16(header->e_machine, opt);
+	if (machine == EM_NONE)
+	{
+		ft_bprintf(1, "");
+		custom_error("ft_nm: '%s' architecture not handled\n", file);
+		//return ;
+	}
 	if (opt & OPT_VERBOSE)
 	{
-		switch (read_uint16(header->e_type, opt))
-		{
-			case ET_NONE:
-				ft_bprintf(0, "Unknown type\n");
-				break;
-			case ET_REL:
-				ft_bprintf(0, "Relocatable file\n");
-				break;
-			case ET_EXEC:
-				ft_bprintf(0, "Executable file\n");
-				break;
-			case ET_DYN:
-				ft_bprintf(0, "Shared object\n");
-				break;
-			case ET_CORE:
-				ft_bprintf(0, "Core file\n");
-				break;
-		}
+		print_elf_type(read_uint16(header->e_type, opt));
+		print_arch(machine);
 		ft_bprintf(0, "%hu program entries\n", read_uint16(header->e_phnum, opt));
 		ft_bprintf(0, "%hu sections entries\n", read_uint16(header->e_shnum, opt));
 		ft_bprintf(0, "Section headers offset = %u\n", read_unsigned_int(header->e_shoff, opt));
@@ -315,57 +306,7 @@ void	handle_32(char *file, char *ptr, long int file_size, int opt)
 			ft_bprintf(0, "Section name = %u (%s)\n", read_uint32(sheader->sh_name, opt),
 			ptr + read_unsigned_int(shstrhdr->sh_offset, opt) + read_uint32(sheader->sh_name, opt));
 			ft_bprintf(0, "Section type = %u", read_uint32(sheader->sh_type, opt));
-			switch (read_uint32(sheader->sh_type, opt))
-			{
-				case SHT_NULL:
-					ft_bprintf(0, " (NULL)");
-					break ;
-				case SHT_PROGBITS:
-					ft_bprintf(0, " (PROGBITS)");
-					break ;
-				case SHT_SYMTAB:
-					ft_bprintf(0, " (SYMTAB)");
-					break ;
-				case SHT_STRTAB:
-					ft_bprintf(0, " (STRTAB)");
-					break ;
-				case SHT_RELA:
-					ft_bprintf(0, " (RELA)");
-					break ;
-				case SHT_HASH:
-					ft_bprintf(0, " (HASH)");
-					break ;
-				case SHT_DYNAMIC:
-					ft_bprintf(0, " (DYNAMIC)");
-					break ;
-				case SHT_NOTE:
-					ft_bprintf(0, " (NOTE)");
-					break ;
-				case SHT_NOBITS:
-					ft_bprintf(0, " (NOBITS)");
-					break ;
-				case SHT_REL:
-					ft_bprintf(0, " (REL)");
-					break ;
-				case SHT_SHLIB:
-					ft_bprintf(0, " (SHLIB)");
-					break ;
-				case SHT_DYNSYM:
-					ft_bprintf(0, " (DYNSYM)");
-					break ;
-				case SHT_LOPROC:
-					ft_bprintf(0, " (LOPROC)");
-					break ;
-				case SHT_HIPROC:
-					ft_bprintf(0, " (HIPROC)");
-					break ;
-				case SHT_LOUSER:
-					ft_bprintf(0, " (LOUSER)");
-					break ;
-				case SHT_HIUSER:
-					ft_bprintf(0, " (HIUSER)");
-					break ;
-			}
+			print_section_type(read_uint32(sheader->sh_type, opt));
 			ft_bprintf(0, "\nSection flags = %u\n", read_uint32(sheader->sh_flags, opt));
 			ft_bprintf(0, "Section size = %lu\n", read_uint32(sheader->sh_size, opt));
 			ft_bprintf(0, "Section link = %u\n", read_uint32(sheader->sh_link, opt));
